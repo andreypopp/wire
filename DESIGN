@@ -1,0 +1,147 @@
+# Wire -- application development toolkit
+
+Common principles are:
+
+  * Library, not a framework
+
+    Doesn't dictate how to structure application.
+
+  * Non-intrusiveness
+
+    You can use any part of the library separately and mix it with other
+    libraries.
+
+  * Doesn't support old browsers
+
+    WebKit and Gecko based browsers are preferable over latest IEs, older IEs
+    are out of consideration at all.
+
+  * Tests, stylechecks
+
+    Code should be tested and checked with jslint/jshint.
+
+Open questions:
+
+  * Should we use AMD or any other module system? maybe we should provide
+    separate AMD and non-AMD builds.
+
+## Planned features
+
+This is not complete or final list of planned or desires features.
+
+### wire.event
+
+An event system (not a DOM one), implemented as a mix-in. See Backbone.Event as
+an example implementation. Possibly we should just use it.
+
+### wire.track
+
+Track changes on objects and arrays. Possible APIs and impls skecthes:
+
+  1 Implicit setters
+
+    Install implicit setter on attribute for objects and fire an event via
+    wire.event on value change
+
+      var o = {a: 1, b: 2}
+      wire.track.track(o.a) // installs implicit setter
+      o.a = 2 // fires changes
+
+    Clean API but lacks transactional semantics. See Simpli5 as an example
+    implementation.
+
+  2 "Register-modify-check"
+
+      var o = {a: 1, b: 2}
+      wire.track.track(o, ['a', 'b']) // registers object with tracking system
+      o.a = 2
+      wire.track.check(o) // fires 'change:a'
+
+    Transactional semantics make such approach a useful one in some cases.
+
+  3 Explicit setters
+
+      o.set("a", 1) // fires event
+
+    Backbone.Model does this. Very Java-like and verbose.
+
+I would better implement 1 or 2 or both of them.
+
+### wire.binding
+
+Unidirectional or bidirectional bindings on top of wire.track.
+
+### wire.template
+
+Data-binding aware templating. See wire.view.BoundView below for explanation.
+
+### wire.view.View
+
+  * Backbone.View as a prototype, add shortcuts for translating DOM and
+    this.<elem> events into own events, e.g.
+
+        events:
+          'click .myClass': 'event click'
+          'newdata this.model': 'event newdata'
+
+  * optionally structure views into tree and treat it as shadow DOM, e.g.
+    selectors and traversing and so on
+
+### wire.view.BoundView
+
+View which owns model and uses wire.template for binding DOM and model.
+
+Built on top of wire.view.View and wire.template, example API:
+
+    class View
+
+      // inline templates as well as selectors in DOM are allowed
+      template: """
+        <div>
+          <span>{title}</span>
+          <img src={image.href}/>
+          <a class="inLibraryToggle">
+            {if inLibrary}In library{else}Not in library{end}
+          </a>
+        </div>
+      """
+
+      events:
+        "click .inLibraryToggle": "onInLibraryToggle"
+
+      onInLibraryToggle: () ->
+        // fires 'change:inLibrary' and thus updates the view
+        this.model.inLibrary = !this.model.inLibrary
+
+    o = {
+      title: "Some title",
+      image: {href: "http://..."},
+      inLibrary: false
+      }
+
+    w = new Widget(o)
+    document.root.append(w.render())
+
+    // fires 'change:title' event on `o` object and thus updating view
+    // only renders dependent parts of it
+    o.title = "Another title"
+
+Notes:
+
+  * Maybe it should be possible to specify event handlers inline in templates,
+    e.g. onclick="onInLibraryToggle" and so on.
+
+### wire.persistence
+
+See how meteor does it, but try to make it more storage agnostic, maybe just
+some conventions like Backbone.Model does.
+
+## References
+
+  * Backbone
+
+  * spine.js
+
+  * Google Model-Driven-Views (mdv for short)
+
+  * Simpli5
