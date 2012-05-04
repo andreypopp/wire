@@ -1,6 +1,6 @@
 "use strict"
 
-module "wire.event"
+module "wire.Event"
 
 test "on and trigger", ->
   obj = {counter: 0}
