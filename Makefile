@@ -9,6 +9,9 @@ lib: $(LIB)
 
 test: $(TESTLIB)
 
+watch:
+	watch -n  0.5 $(MAKE) all
+
 lib/%.js: src/%.co
 	@mkdir -p $(@D)
 	coco -bpc $< > $@
