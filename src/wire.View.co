@@ -1,0 +1,36 @@
+"use strict"
+
+((root, modulename, factory) ->
+  if typeof define === 'function' and define.amd
+    define ->
+      root.wire = root.wire or {}
+      root.wire[modulename] = factory()
+  else
+    root.wire = root.wire or {}
+    root.wire[modulename] = factory())(this, 'View', ->
+
+  eventSplitterRe = /\s+/
+
+  class View
+
+    (options) ->
+      events = options?.events or {}
+      if this.events
+        _.extend(events, this.events or {})
+      if events
+        this.delegateEvents(events)
+
+    $: (selector) ->
+      $(selector, this.el)
+
+    delegateEvents: (events) ->
+      for k, v of events
+        if not typeof v is 'function'
+          let
+            v = -> this[v].apply(this, arguments)
+      [ev, path] = k.match(eventSplitterRe)
+      if path is ''
+        this.$el.bind(ev, v)
+      else
+        this.$el.delegate(path, ev, v)
+)

@@ -10,11 +10,12 @@
     root.wire[modulename] = factory())(this, 'Event', ->
 
   slice = Array.prototype.slice
+  eventSplitterRe = /\s+/
 
   # Bind an event, specified by a string name, `ev`, to a `callback` function.
   # Passing `"all"` will bind the callback to all events fired.
   on: (events, callback, context) ->
-    events = events.split(/\s+/)
+    events = events.split(eventSplitterRe)
     calls = this._callbacks || (this._callbacks = {})
     while ev = events.shift()
       # Create an immutable callback list, allowing traversal during
