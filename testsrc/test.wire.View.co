@@ -9,8 +9,7 @@ test "propagates events from attributes", ->
   _.extend(o, wire.Event)
 
   class MyView extends wire.View
-
-    (options) ->
+    ->
       super ...
 
     events:
