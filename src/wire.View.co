@@ -13,24 +13,57 @@
 
   class View
 
+    tag: 'div'
+
     (options) ->
+      for key, value of this.options
+        if ['events'].indexOf(key) is not undefined
+          this[key] = value
+
+      if not this.el
+        this.el = $(document.createElement(this.tag))
+
       events = options?.events or {}
       if this.events
         _.extend(events, this.events or {})
       if events
-        this.delegateEvents(events)
+        this.configureEvents(events)
 
-    $: (selector) ->
-      $(selector, this.el)
+      this.events = events
 
-    delegateEvents: (events) ->
+    # Configure events of a view.
+    #
+    # @param {Object} events
+    #   The event declaration table, keys can be of form
+    #
+    #     a '<eventname> <dom selector>'
+    #       in that case there will be event handler attached to event
+    #       <eventname> on DOM element selected by <dom selector>
+    #
+    #     b 'eventname this.<path>'
+    #       in that case there will be event handler attached to event
+    #       <eventname> on this.<path> attribute of a view
+    #
+    configureEvents: (events) ->
       for k, v of events
         if not typeof v is 'function'
-          let
-            v = -> this[v].apply(this, arguments)
-      [ev, path] = k.match(eventSplitterRe)
-      if path is ''
-        this.$el.bind(ev, v)
-      else
-        this.$el.delegate(path, ev, v)
+          if v[0..6] is 'event '
+            let
+              v = -> this.trigger(v[7..])
+          else
+            let
+              v = -> this[v].apply(this, arguments)
+        [ev, path] = k.split(eventSplitterRe)
+        if path is ''
+          this.el.bind(ev, v)
+        else if path[0..5] is 'this.'
+          wire.path(this, path[6..]).on(ev, v)
+        else
+          this.el.delegate(path, ev, v)
+
+    # Scoped DOM selector
+    #
+    # @param {String} selector
+    $: (selector) ->
+      $(selector, this.el)
 )
