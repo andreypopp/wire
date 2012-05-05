@@ -71,4 +71,8 @@
       this.el.remove()
       this.off()
       # TODO what about DOM events?
+
+  _.extend(View.prototype, wire.Event)
+
+  View
 )
