@@ -1,0 +1,21 @@
+"use strict"
+
+module "wire.View"
+
+test "propagates events from attributes", ->
+  expect(1)
+
+  o = {}
+  _.extend(o, wire.Event)
+
+  class MyView extends wire.View
+
+    (options) ->
+      super ...
+
+    events:
+      'ping this.o': 'event pong'
+
+  window.view = view = new MyView(o: o)
+  view.on('pong', -> ok())
+  view.o.trigger('ping')

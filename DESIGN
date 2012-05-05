@@ -75,6 +75,22 @@ Unidirectional or bidirectional bindings on top of wire.track.
 
 Data-binding aware templating. See wire.view.BoundView below for explanation.
 
+Syntax draft:
+
+    <div>
+      {expression}  // shows expression
+      {=expression} // shows expression and binds to it
+      {if expression} // compiles to conditional
+        ...
+      {/}
+      {if =expression} // compiles to conditional and binds to it
+        ...
+      {/}
+      {for obj in expression} // compiles to loop over expression result
+      {for obj in =expression} // compiles to loop over expression result and
+                               // binds to it
+    </div>
+
 ### wire.view.View
 
   * Backbone.View as a prototype, add shortcuts for translating DOM and
