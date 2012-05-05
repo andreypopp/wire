@@ -9,37 +9,39 @@
     root.wire = root.wire or {}
     root.wire[modulename] = factory())(this, 'track', ->
 
-  _trackAttr = (o, attr) ->
-    prop = Object.getOwnPropertyDescriptor(o, attr)
-    if prop !== undefined
-      # already tracked
-      if prop.set !== undefined and prop.set.isTracker
-        return
-      # has setter and getter
-      if prop.get and prop.set
-        Object.defineProperty(o, attr,
-          get: prop.get
-          set: (newval) ->
-            oldval = prop.get.call(o)
-            prop.set.call(o, newval)
-            if oldval !== newval
-              o.trigger('change:' + attr, newval))
-        Object.getOwnPropertyDescriptor(o, attr).set.isTracker = true
-      # plain attribute or just writable one, we ignore read-only attributes
-      else if not prop.get
-        val = o[attr]
-        Object.defineProperty(o, attr,
-          get: -> val
-          set: (newval) ->
-            oldval = val
-            val := newval
-            if oldval !== newval
-              o.trigger('change:' + attr, newval))
-        Object.getOwnPropertyDescriptor(o, attr).set.isTracker = true
-
   (o, attrs) ->
     attrs = attrs.split(/\s+/)
-    for k in attrs
-      _trackAttr(o, attrs[k])
+    for attr of attrs
+      let
+        prop = Object.getOwnPropertyDescriptor(o, attr)
+        if prop !== undefined
+
+          # already tracked
+          if prop.set is not undefined and prop.set.isTracker
+            return
+
+          # has setter and getter
+          if prop.get and prop.set
+            Object.defineProperty(o, attr,
+              get: prop.get
+              set: (newval) ->
+                oldval = prop.get.call(o)
+                prop.set.call(o, newval)
+                if oldval !== newval
+                  o.trigger('change:' + attr, newval))
+            Object.getOwnPropertyDescriptor(o, attr).set.isTracker = true
+
+          # plain attribute or just writable one, we ignore read-only attributes
+          else if not prop.get
+            val = o[attr]
+            Object.defineProperty(o, attr,
+              get: -> val
+              set: (newval) ->
+                oldval = val
+                val := newval
+                if oldval !== newval
+                  o.trigger('change:' + attr, newval))
+
+          Object.getOwnPropertyDescriptor(o, attr).set?.isTracker = true
     return
 )
