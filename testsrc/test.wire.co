@@ -1,0 +1,14 @@
+"use strict"
+
+module "wire"
+
+test "traverse object by path", ->
+  o = {a: {b: {c: 1}}}
+  deepEqual(wire.path(o, 'a.b.c'), 1)
+  deepEqual(wire.path(o, 'a.b'), {c: 1})
+  deepEqual(wire.path(o, 'a'), {b: {c: 1}})
+  deepEqual(wire.path(o, ''), {a: {b: {c: 1}}})
+  deepEqual(wire.path(o), {a: {b: {c: 1}}})
+
+  deepEqual(wire.path(o, 'b'), undefined)
+  deepEqual(wire.path(o, 'b.c'), undefined)

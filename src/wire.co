@@ -1,0 +1,18 @@
+"use strict"
+
+((root, modulename, factory) ->
+  if typeof define === 'function' and define.amd
+    define ->
+      root.wire = factory()
+  else
+    root.wire = factory())(this, 'View', ->
+
+  path: (o, p) ->
+    if not p
+      return o
+    for p of p.split('.')
+      o = o[p]
+      if o is undefined
+        return o
+    return o
+)
