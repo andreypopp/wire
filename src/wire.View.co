@@ -66,4 +66,9 @@
     # @param {String} selector
     $: (selector) ->
       $(selector, this.el)
+
+    release: ->
+      this.el.remove()
+      this.off()
+      # TODO what about DOM events?
 )
