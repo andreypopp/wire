@@ -12,8 +12,10 @@
   _trackAttr = (o, attr) ->
     prop = Object.getOwnPropertyDescriptor(o, attr)
     if prop !== undefined
+      # already tracked
       if prop.set !== undefined and prop.set.isTracker
         return
+      # has setter and getter
       if prop.get and prop.set
         Object.defineProperty(o, attr,
           get: prop.get
@@ -23,6 +25,7 @@
             if oldval !== newval
               o.trigger('change:' + attr, newval))
         Object.getOwnPropertyDescriptor(o, attr).set.isTracker = true
+      # plain attribute or just writable one, we ignore read-only attributes
       else if not prop.get
         val = o[attr]
         Object.defineProperty(o, attr,
