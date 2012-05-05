@@ -1,0 +1,84 @@
+"use strict"
+
+module "wire.track"
+
+test "plain attr track and then change fires event", ->
+  o = {counter: 0, sync: 0}
+  _.extend(o, wire.Event)
+  wire.track(o, 'counter')
+  o.on('change:counter', (newval) -> o.sync = newval)
+  o.counter = 2
+  equal(o.counter, 2, 'attributed should be changed')
+  equal(o.counter, o.sync, 'sync should be updated')
+  o.counter = 4
+  equal(o.counter, 4, 'attributed should be changed')
+  equal(o.counter, o.sync, 'sync should be updated')
+
+test "track multiple attrs via single track call", ->
+  o = {counter: 0, counter2: 0, sync: 0}
+  _.extend(o, wire.Event)
+  wire.track(o, 'counter  counter2')
+  o.on('change:counter change:counter2', (newval) -> o.sync = newval)
+  o.counter = 2
+  equal(o.counter, 2, 'attributed should be changed')
+  equal(o.counter, o.sync, 'sync should be updated')
+  o.counter2 = 3
+  equal(o.counter2, 3, 'attributed should be changed')
+  equal(o.counter2, o.sync, 'sync should be updated')
+  o.counter = 4
+  equal(o.counter, 4, 'attributed should be changed')
+  equal(o.counter, o.sync, 'sync should be updated')
+
+test "should respect property with getter and setter defined", ->
+  o = {counter: 0, sync: 0}
+  _.extend(o, wire.Event)
+  val = o.counter
+  Object.defineProperty(o, 'counter',
+    get: -> val * 2
+    set: -> val := val + 1,
+    configurable: true)
+  wire.track(o, 'counter')
+  o.on('change:counter', (newval) -> o.sync = newval)
+  o.counter = 1
+  equal(o.counter, 2, 'counter should be setted according to setter')
+  equal(o.sync, 1, 'change event should fired')
+
+test "should respect property with only getter defined (just ignore it)", ->
+  expect(0)
+  o = {counter: 0, sync: 0}
+  _.extend(o, wire.Event)
+  val = o.counter
+  Object.defineProperty(o, 'counter',
+    get: -> val * 2
+    configurable: true)
+  wire.track(o, 'counter')
+
+test "should respect property with only setter defined", ->
+  o = {counter: 0, sync: 0}
+  _.extend(o, wire.Event)
+  val = o.counter
+  Object.defineProperty(o, 'counter',
+    set: -> val := val + 1,
+    configurable: true)
+  wire.track(o, 'counter')
+  o.on('change:counter', (newval) -> o.sync = newval)
+  o.counter = 1
+  equal(o.counter, 1, 'counter should be setted according to setter')
+  equal(o.sync, 1, 'change event should fired')
+
+test "track is idempotent", ->
+  results = []
+  o = {counter: 0}
+  _.extend(o, wire.Event)
+  wire.track(o, 'counter')
+  o.on('change:counter', (newval) -> results.push(newval))
+  o.counter = 1
+  deepEqual(results, [1])
+  o.counter = 2
+  deepEqual(results, [1, 2])
+
+  wire.track(o, 'counter')
+  o.counter = 1
+  deepEqual(results, [1, 2, 1])
+  o.counter = 2
+  deepEqual(results, [1, 2, 1, 2])

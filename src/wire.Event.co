@@ -1,10 +1,13 @@
 "use strict"
 
-define = define || (func) ->
-  window.wire = window.wire || {}
-  window.wire.Event = func()
-
-define ->
+((root, modulename, factory) ->
+  if typeof define === 'function' and define.amd
+    define ->
+      root.wire = root.wire or {}
+      root.wire[modulename] = factory()
+  else
+    root.wire = root.wire or {}
+    root.wire[modulename] = factory())(this, 'Event', ->
 
   slice = Array.prototype.slice
 
@@ -69,3 +72,4 @@ define ->
         if node.callback != null
           node.callback.apply(node.context || this, args)
     this
+  )
