@@ -12,3 +12,9 @@ test "traverse object by path", ->
 
   deepEqual(wire.path(o, 'b'), undefined)
   deepEqual(wire.path(o, 'b.c'), undefined)
+
+  o = {a: [1, {b: 2}]}
+  deepEqual(wire.path(o, 'a'), [1, {b: 2}])
+  deepEqual(wire.path(o, 'a.0'), 1)
+  deepEqual(wire.path(o, 'a.1'), {b: 2})
+  deepEqual(wire.path(o, 'a.1.b'), 2)
