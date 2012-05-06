@@ -1,8 +1,8 @@
-"use strict"
+'use strict'
 
-module "wire.Event"
+module 'wire.Event'
 
-test "on and trigger", ->
+test 'on and trigger', ->
   obj = {counter: 0}
   _.extend(obj, wire.Event)
   obj.on('event', -> obj.counter += 1)
@@ -14,7 +14,7 @@ test "on and trigger", ->
   obj.trigger('event')
   equal(obj.counter, 5, 'counter should be incremented five times.')
 
-test "binding and triggering multiple events", ->
+test 'binding and triggering multiple events', ->
   obj = {counter: 0}
   _.extend(obj, wire.Event)
 
@@ -33,7 +33,7 @@ test "binding and triggering multiple events", ->
   obj.trigger('a b c')
   equal(obj.counter, 5)
 
-test "trigger all for each event" ->
+test 'trigger all for each event' ->
   obj = {counter: 0}
   a = b = void
   _.extend(obj, wire.Event)
@@ -47,7 +47,7 @@ test "trigger all for each event" ->
   ok(b)
   equal(obj.counter, 2)
 
-test "on, then unbind all functions", ->
+test 'on, then unbind all functions', ->
   obj = {counter: 0}
   _.extend(obj,wire.Event)
   callback = -> obj.counter += 1
@@ -57,7 +57,7 @@ test "on, then unbind all functions", ->
   obj.trigger('event')
   equal(obj.counter, 1, 'counter should have only been incremented once.')
 
-test "bind two callbacks, unbind only one", ->
+test 'bind two callbacks, unbind only one', ->
   obj = {counterA: 0, counterB: 0}
   _.extend(obj,wire.Event)
   callback = -> obj.counterA += 1
@@ -69,7 +69,7 @@ test "bind two callbacks, unbind only one", ->
   equal(obj.counterA, 1, 'counterA should have only been incremented once.')
   equal(obj.counterB, 2, 'counterB should have been incremented twice.')
 
-test "unbind a callback in the midst of it firing", ->
+test 'unbind a callback in the midst of it firing', ->
   obj = {counter: 0}
   _.extend(obj, wire.Event)
   callback = ->
@@ -81,7 +81,7 @@ test "unbind a callback in the midst of it firing", ->
   obj.trigger('event')
   equal(obj.counter, 1, 'the callback should have been unbound.')
 
-test "two binds that unbind themeselves", ->
+test 'two binds that unbind themeselves', ->
   obj = {counterA: 0, counterB: 0}
   _.extend(obj,wire.Event)
   incrA = ->
@@ -98,7 +98,7 @@ test "two binds that unbind themeselves", ->
   equal(obj.counterA, 1, 'counterA should have only been incremented once.')
   equal(obj.counterB, 1, 'counterB should have only been incremented once.')
 
-test "bind a callback with a supplied context", ->
+test 'bind a callback with a supplied context', ->
   expect(1)
 
   TestClass = ->
@@ -112,7 +112,7 @@ test "bind a callback with a supplied context", ->
 
   obj.trigger('event')
 
-test "nested trigger with unbind", ->
+test 'nested trigger with unbind', ->
   expect(1)
   obj = {counter: 0}
   _.extend(obj, wire.Event)
@@ -126,7 +126,7 @@ test "nested trigger with unbind", ->
   obj.trigger('event')
   equal(obj.counter, 3, 'counter should have been incremented three times')
 
-test "callback list is not altered during trigger", ->
+test 'callback list is not altered during trigger', ->
   counter = 0
   obj = _.extend({}, wire.Event)
   incr = -> counter++
@@ -140,6 +140,6 @@ test "callback list is not altered during trigger", ->
     .trigger('event')
   equal(counter, 2, 'unbind does not alter callback list')
 
-test "if no callback is provided, `on` is a noop", ->
+test 'if no callback is provided, `on` is a noop', ->
   expect(0)
   _.extend({}, wire.Event).on('test').trigger('test')

@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 ((root, modulename, factory) ->
   if typeof define === 'function' and define.amd

@@ -1,8 +1,8 @@
-"use strict"
+'use strict'
 
-module "wire.track"
+module 'wire.track'
 
-test "plain attr track and then change fires event", ->
+test 'plain attr track and then change fires event', ->
   o = {counter: 0, sync: 0}
   _.extend(o, wire.Event)
   wire.track(o, 'counter')
@@ -14,7 +14,7 @@ test "plain attr track and then change fires event", ->
   equal(o.counter, 4, 'attributed should be changed')
   equal(o.counter, o.sync, 'sync should be updated')
 
-test "track multiple attrs via single track call", ->
+test 'track multiple attrs via single track call', ->
   o = {counter: 0, counter2: 0, sync: 0}
   _.extend(o, wire.Event)
   wire.track(o, 'counter  counter2')
@@ -29,7 +29,7 @@ test "track multiple attrs via single track call", ->
   equal(o.counter, 4, 'attributed should be changed')
   equal(o.counter, o.sync, 'sync should be updated')
 
-test "should respect property with getter and setter defined", ->
+test 'should respect property with getter and setter defined', ->
   o = {counter: 0, sync: 0}
   _.extend(o, wire.Event)
   val = o.counter
@@ -43,7 +43,7 @@ test "should respect property with getter and setter defined", ->
   equal(o.counter, 2, 'counter should be setted according to setter')
   equal(o.sync, 1, 'change event should fired')
 
-test "should respect property with only getter defined (just ignore it)", ->
+test 'should respect property with only getter defined (just ignore it)', ->
   expect(0)
   o = {counter: 0, sync: 0}
   _.extend(o, wire.Event)
@@ -53,7 +53,7 @@ test "should respect property with only getter defined (just ignore it)", ->
     configurable: true)
   wire.track(o, 'counter')
 
-test "should respect property with only setter defined", ->
+test 'should respect property with only setter defined', ->
   o = {counter: 0, sync: 0}
   _.extend(o, wire.Event)
   val = o.counter
@@ -66,7 +66,7 @@ test "should respect property with only setter defined", ->
   equal(o.counter, 1, 'counter should be setted according to setter')
   equal(o.sync, 1, 'change event should fired')
 
-test "track is idempotent", ->
+test 'track is idempotent', ->
   results = []
   o = {counter: 0}
   _.extend(o, wire.Event)

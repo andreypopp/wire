@@ -1,8 +1,8 @@
-"use strict"
+'use strict'
 
-module "wire"
+module 'wire'
 
-test "traverse object by path", ->
+test 'traverse object by path', ->
   o = {a: {b: {c: 1}}}
   deepEqual(wire.path(o, 'a.b.c'), 1)
   deepEqual(wire.path(o, 'a.b'), {c: 1})
