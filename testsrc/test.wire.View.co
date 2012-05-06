@@ -6,7 +6,7 @@ test 'propagates events from attributes', ->
   expect(1)
 
   o = {}
-  _.extend(o, wire.Event)
+  wire.extend(o, wire.Event)
 
   class MyView extends wire.View
     -> super ...

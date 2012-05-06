@@ -27,7 +27,7 @@
 
       events = options?.events or {}
       if this.events
-        _.extend(events, this.events or {})
+        wire.extend(events, this.events or {})
       if events
         this.configureEvents(events)
 
@@ -87,7 +87,7 @@
       this.off()
       # TODO what about DOM events?
 
-  _.extend(View.prototype, wire.Event)
+  wire.extend(View.prototype, wire.Event)
 
   View
 )

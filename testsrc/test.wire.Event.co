@@ -4,7 +4,7 @@ module 'wire.Event'
 
 test 'on and trigger', ->
   obj = {counter: 0}
-  _.extend(obj, wire.Event)
+  wire.extend(obj, wire.Event)
   obj.on('event', -> obj.counter += 1)
   obj.trigger('event')
   equal(obj.counter, 1, 'counter should be incremented.')
@@ -16,7 +16,7 @@ test 'on and trigger', ->
 
 test 'binding and triggering multiple events', ->
   obj = {counter: 0}
-  _.extend(obj, wire.Event)
+  wire.extend(obj, wire.Event)
 
   obj.on('a b c', -> obj.counter += 1)
 
@@ -36,7 +36,7 @@ test 'binding and triggering multiple events', ->
 test 'trigger all for each event' ->
   obj = {counter: 0}
   a = b = void
-  _.extend(obj, wire.Event)
+  wire.extend(obj, wire.Event)
   obj.on('all', (event) ->
     obj.counter++
     if (event == 'a') then a := true
@@ -49,7 +49,7 @@ test 'trigger all for each event' ->
 
 test 'on, then unbind all functions', ->
   obj = {counter: 0}
-  _.extend(obj,wire.Event)
+  wire.extend(obj,wire.Event)
   callback = -> obj.counter += 1
   obj.on('event', callback)
   obj.trigger('event')
@@ -59,7 +59,7 @@ test 'on, then unbind all functions', ->
 
 test 'bind two callbacks, unbind only one', ->
   obj = {counterA: 0, counterB: 0}
-  _.extend(obj,wire.Event)
+  wire.extend(obj,wire.Event)
   callback = -> obj.counterA += 1
   obj.on('event', callback)
   obj.on('event', -> obj.counterB += 1)
@@ -71,7 +71,7 @@ test 'bind two callbacks, unbind only one', ->
 
 test 'unbind a callback in the midst of it firing', ->
   obj = {counter: 0}
-  _.extend(obj, wire.Event)
+  wire.extend(obj, wire.Event)
   callback = ->
     obj.counter += 1
     obj.off('event', callback)
@@ -83,7 +83,7 @@ test 'unbind a callback in the midst of it firing', ->
 
 test 'two binds that unbind themeselves', ->
   obj = {counterA: 0, counterB: 0}
-  _.extend(obj,wire.Event)
+  wire.extend(obj,wire.Event)
   incrA = ->
     obj.counterA += 1
     obj.off('event', incrA)
@@ -106,7 +106,7 @@ test 'bind a callback with a supplied context', ->
   TestClass.prototype.assertTrue = ->
     ok(true, '`this` was bound to the callback')
 
-  obj = _.extend({},wire.Event)
+  obj = wire.extend({},wire.Event)
 
   obj.on('event', (-> this.assertTrue()), (new TestClass))
 
@@ -115,7 +115,7 @@ test 'bind a callback with a supplied context', ->
 test 'nested trigger with unbind', ->
   expect(1)
   obj = {counter: 0}
-  _.extend(obj, wire.Event)
+  wire.extend(obj, wire.Event)
   incr1 = ->
     obj.counter += 1
     obj.off('event', incr1)
@@ -128,7 +128,7 @@ test 'nested trigger with unbind', ->
 
 test 'callback list is not altered during trigger', ->
   counter = 0
-  obj = _.extend({}, wire.Event)
+  obj = wire.extend({}, wire.Event)
   incr = -> counter++
   obj.on('event', -> obj.on('event', incr).on('all', incr))
     .trigger('event')
@@ -142,4 +142,4 @@ test 'callback list is not altered during trigger', ->
 
 test 'if no callback is provided, `on` is a noop', ->
   expect(0)
-  _.extend({}, wire.Event).on('test').trigger('test')
+  wire.extend({}, wire.Event).on('test').trigger('test')
