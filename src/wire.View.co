@@ -74,7 +74,7 @@
         else if path.slice(0, 5) is 'this.'
           wire.path(this, path.slice(5)).on(ev, v)
         else
-          this.el.delegate(path, ev, v)
+          this.el.on(ev, path, v)
 
     # Scoped DOM selector
     #

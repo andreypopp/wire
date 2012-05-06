@@ -14,7 +14,7 @@ test 'propagates events from attributes', ->
     events:
       'ping this.o': 'trigger pong'
 
-  view = new MyView(o: o)
+  window.view = view = new MyView(o: o)
   view.on('pong', -> ok(true))
   view.o.trigger('ping')
 
@@ -30,5 +30,5 @@ test 'propagates events from DOM', ->
 
   view = new MyView(el: $('body'))
   view.on('pong', -> ok(true))
-  view.el.click()
-  view.$('#testElement').click()
+  view.el.trigger('click')
+  view.$('#testElement').trigger('click')
