@@ -1,20 +1,34 @@
-"use strict"
+'use strict'
 
-module "wire.View"
+module 'wire.View'
 
-test "propagates events from attributes", ->
+test 'propagates events from attributes', ->
   expect(1)
 
   o = {}
   _.extend(o, wire.Event)
 
   class MyView extends wire.View
-    ->
-      super ...
+    -> super ...
 
     events:
-      'ping this.o': 'event pong'
+      'ping this.o': 'trigger pong'
 
-  window.view = view = new MyView(o: o)
-  view.on('pong', -> ok())
+  view = new MyView(o: o)
+  view.on('pong', -> ok(true))
   view.o.trigger('ping')
+
+test 'propagates events from DOM', ->
+  expect(3)
+
+  class MyView extends wire.View
+    -> super ...
+
+    events:
+      'click': 'trigger pong'
+      'click #testElement': 'trigger pong'
+
+  view = new MyView(el: $('body'))
+  view.on('pong', -> ok(true))
+  view.el.click()
+  view.$('#testElement').click()
