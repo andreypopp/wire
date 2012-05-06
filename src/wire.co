@@ -1,11 +1,11 @@
 'use strict'
 
-((root, modulename, factory) ->
+((root, factory) ->
   if typeof define === 'function' and define.amd
     define ->
       root.wire = factory()
   else
-    root.wire = factory())(this, 'View', ->
+    root.wire = factory())(this, ->
 
 
   idCounter = 0
