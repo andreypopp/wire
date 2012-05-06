@@ -7,18 +7,24 @@
   else
     root.wire = factory())(this, ->
 
+  extend = (o) ->
+    for x of Array::slice.call(arguments, 1)
+      for key in x
+        o[key] = x[key]
+    o
+
+  class Base
+    @extended = (sub) ->
+      sub.mixin = this.mixin
+
+    @mixin = ->
+      extend(this::, ...arguments)
 
   idCounter = 0
 
   genId: (prefix) ->
     id = idCounter++
     if prefix then prefix + id else '' + id
-
-  extend: (o) ->
-    for x of Array::slice.call(arguments, 1)
-      for key in x
-        o[key] = x[key]
-    o
 
   path: (o, p) ->
     if not p
@@ -28,4 +34,7 @@
       if o is undefined
         return o
     return o
+
+  extend: extend
+  Base: Base
 )

@@ -13,7 +13,8 @@
 
   specialAttributes = ['events']
 
-  class View
+  class View extends wire.Base
+    @mixin(wire.Event)
 
     tag: 'div'
 
@@ -86,8 +87,6 @@
       this.el.remove()
       this.off()
       # TODO what about DOM events?
-
-  wire.extend(View.prototype, wire.Event)
 
   View
 )
