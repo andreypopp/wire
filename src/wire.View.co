@@ -46,6 +46,19 @@
     #       in that case there will be event handler attached to event
     #       <eventname> on this.<path> attribute of a view
     #
+    #   Values can be of form
+    #
+    #     a function () { ... }
+    #       in that case function will be called on event
+    #
+    #     b '<functionname>'
+    #       function will be looked up on View and bound to it and then called
+    #       on event
+    #
+    #     c 'trigger <eventname>'
+    #       event <eventname> will be fired on view on event
+    #       this allows event propagation
+    #
     configureEvents: (events) ->
       for k, v in events
         if not (typeof v is 'function')
