@@ -1,0 +1,17 @@
+'use strict'
+
+((root, modulename, factory) ->
+  if typeof define === 'function' and define.amd
+    define ->
+      root.wire = root.wire or {}
+      root.wire[modulename] = factory()
+  else
+    root.wire = root.wire or {}
+    root.wire[modulename] = factory())(this, 'template', ->
+
+
+  compile = (text) ->
+    exprRe = /({[a-zA-Z][a-zA-Z0-9\.]+})/
+
+  {compile}
+  )
