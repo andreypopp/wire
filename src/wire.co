@@ -14,11 +14,16 @@
     o
 
   class Base
+
     @extended = (sub) ->
       sub.mixin = this.mixin
+      sub.extended = this.extended
 
     @mixin = ->
       extend(this::, ...arguments)
+      for x of Array::slice.call(arguments)
+        x.extended?(this)
+      this
 
   idCounter = 0
 
