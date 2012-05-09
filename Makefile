@@ -10,7 +10,7 @@ lib: $(LIB)
 test: $(TESTLIB)
 
 watch:
-	watch -n  0.5 $(MAKE) all
+	watch -n  0.3 $(MAKE) all
 
 lib/%.js: src/%.co
 	@mkdir -p $(@D)
