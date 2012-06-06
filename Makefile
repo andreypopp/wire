@@ -1,20 +1,16 @@
 SRC = $(wildcard src/*.co)
+LIB = $(SRC:src/%.co=lib/%.js)
+
 TESTSRC = $(wildcard testsrc/*.co)
-GRAMMAR = $(wildcard src/*.pegjs)
-LIB = $(patsubst src/%.co, lib/%.js, $(SRC))
-TESTLIB = $(patsubst testsrc/%.co, test/%.js, $(TESTSRC))
-PARSER = $(patsubst src/%.pegjs, lib/%.js, $(GRAMMAR))
+TESTLIB = $(TESTSRC:testsrc/%.co=test/%.js)
 
 COCO = coco -bcp
-PEGJS = ./pegjs/bin/pegjs
 
-all: lib test parser
+all: lib test
 
 lib: $(LIB)
 
 test: $(TESTLIB)
-
-parser: $(PARSER)
 
 watch:
 	watch -n  0.3 $(MAKE) all
@@ -22,10 +18,6 @@ watch:
 lib/%.js: src/%.co
 	@mkdir -p $(@D)
 	$(COCO) $< > $@
-
-lib/%.js: src/%.pegjs
-	@mkdir -p $(@D)
-	$(PEGJS) $< $@
 
 test/%.js: testsrc/%.co
 	$(COCO) $< > $@
