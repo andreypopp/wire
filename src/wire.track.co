@@ -1,13 +1,6 @@
-"use strict"
+'use strict'
 
-((root, modulename, factory) ->
-  if typeof define === 'function' and define.amd
-    define ->
-      root.wire = root.wire or {}
-      root.wire[modulename] = factory()
-  else
-    root.wire = root.wire or {}
-    root.wire[modulename] = factory())(this, 'track', ->
+define ->
 
   (o, attrs) ->
     attrs = attrs.split(/\s+/)
@@ -44,4 +37,3 @@
 
           Object.getOwnPropertyDescriptor(o, attr).set?.isTracker = true
     return
-)

@@ -1,20 +1,16 @@
 'use strict'
 
-((root, modulename, factory) ->
-  if typeof define === 'function' and define.amd
-    define ->
-      root.wire = root.wire or {}
-      root.wire[modulename] = factory()
-  else
-    root.wire = root.wire or {}
-    root.wire[modulename] = factory())(this, 'View', ->
+define (require) ->
+
+  Event = require('wire.Event')
+  {Base, extend, path} = require('wire')
 
   eventSplitterRe = /\s+/
 
   specialAttributes = ['events']
 
-  class View extends wire.Base
-    @mixin(wire.Event)
+  class View extends Base
+    @mixin(Event)
 
     tag: 'div'
 
@@ -28,7 +24,7 @@
 
       events = options?.events or {}
       if this.events
-        wire.extend(events, this.events or {})
+        extend(events, this.events or {})
       if events
         this.configureEvents(events)
 
@@ -73,7 +69,7 @@
         if path is undefined
           this.el.bind(ev, v)
         else if path.slice(0, 5) is 'this.'
-          wire.path(this, path.slice(5)).on(ev, v)
+          path(this, path.slice(5)).on(ev, v)
         else
           this.el.on(ev, path, v)
 
@@ -87,6 +83,3 @@
       this.el.remove()
       this.off()
       # TODO what about DOM events?
-
-  View
-)

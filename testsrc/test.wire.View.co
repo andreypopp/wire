@@ -1,34 +1,40 @@
 'use strict'
 
-module 'wire.View'
+define (require) ->
 
-test 'propagates events from attributes', ->
-  expect(1)
+  Event = require('wire.Event')
+  View = require('wire.View')
+  {extend} = require('wire')
 
-  o = {}
-  wire.extend(o, wire.Event)
+  module 'wire.View'
 
-  class MyView extends wire.View
-    -> super ...
+  test 'propagates events from attributes', ->
+    expect(1)
 
-    events:
-      'ping this.o': 'trigger pong'
+    o = {}
+    extend(o, Event)
 
-  window.view = view = new MyView(o: o)
-  view.on('pong', -> ok(true))
-  view.o.trigger('ping')
+    class MyView extends View
+      -> super ...
 
-test 'propagates events from DOM', ->
-  expect(3)
+      events:
+        'ping this.o': 'trigger pong'
 
-  class MyView extends wire.View
-    -> super ...
+    window.view = view = new MyView(o: o)
+    view.on('pong', -> ok(true))
+    view.o.trigger('ping')
 
-    events:
-      'click': 'trigger pong'
-      'click #testElement': 'trigger pong'
+  test 'propagates events from DOM', ->
+    expect(3)
 
-  view = new MyView(el: $('body'))
-  view.on('pong', -> ok(true))
-  view.el.trigger('click')
-  view.$('#testElement').trigger('click')
+    class MyView extends View
+      -> super ...
+
+      events:
+        'click': 'trigger pong'
+        'click #testElement': 'trigger pong'
+
+    view = new MyView(el: $('body'))
+    view.on('pong', -> ok(true))
+    view.el.trigger('click')
+    view.$('#testElement').trigger('click')

@@ -1,145 +1,150 @@
 'use strict'
 
-module 'wire.Event'
+define (require) ->
 
-test 'on and trigger', ->
-  obj = {counter: 0}
-  wire.extend(obj, wire.Event)
-  obj.on('event', -> obj.counter += 1)
-  obj.trigger('event')
-  equal(obj.counter, 1, 'counter should be incremented.')
-  obj.trigger('event')
-  obj.trigger('event')
-  obj.trigger('event')
-  obj.trigger('event')
-  equal(obj.counter, 5, 'counter should be incremented five times.')
+  Event = require('wire.Event')
+  {extend} = require('wire')
 
-test 'binding and triggering multiple events', ->
-  obj = {counter: 0}
-  wire.extend(obj, wire.Event)
+  module 'wire.Event'
 
-  obj.on('a b c', -> obj.counter += 1)
-
-  obj.trigger('a')
-  equal(obj.counter, 1)
-
-  obj.trigger('a b')
-  equal(obj.counter, 3)
-
-  obj.trigger('c')
-  equal(obj.counter, 4)
-
-  obj.off('a c')
-  obj.trigger('a b c')
-  equal(obj.counter, 5)
-
-test 'trigger all for each event' ->
-  obj = {counter: 0}
-  a = b = void
-  wire.extend(obj, wire.Event)
-  obj.on('all', (event) ->
-    obj.counter++
-    if (event == 'a') then a := true
-    if (event == 'b') then b := true
-  )
-  .trigger('a b')
-  ok(a)
-  ok(b)
-  equal(obj.counter, 2)
-
-test 'on, then unbind all functions', ->
-  obj = {counter: 0}
-  wire.extend(obj,wire.Event)
-  callback = -> obj.counter += 1
-  obj.on('event', callback)
-  obj.trigger('event')
-  obj.off('event')
-  obj.trigger('event')
-  equal(obj.counter, 1, 'counter should have only been incremented once.')
-
-test 'bind two callbacks, unbind only one', ->
-  obj = {counterA: 0, counterB: 0}
-  wire.extend(obj,wire.Event)
-  callback = -> obj.counterA += 1
-  obj.on('event', callback)
-  obj.on('event', -> obj.counterB += 1)
-  obj.trigger('event')
-  obj.off('event', callback)
-  obj.trigger('event')
-  equal(obj.counterA, 1, 'counterA should have only been incremented once.')
-  equal(obj.counterB, 2, 'counterB should have been incremented twice.')
-
-test 'unbind a callback in the midst of it firing', ->
-  obj = {counter: 0}
-  wire.extend(obj, wire.Event)
-  callback = ->
-    obj.counter += 1
-    obj.off('event', callback)
-  obj.on('event', callback)
-  obj.trigger('event')
-  obj.trigger('event')
-  obj.trigger('event')
-  equal(obj.counter, 1, 'the callback should have been unbound.')
-
-test 'two binds that unbind themeselves', ->
-  obj = {counterA: 0, counterB: 0}
-  wire.extend(obj,wire.Event)
-  incrA = ->
-    obj.counterA += 1
-    obj.off('event', incrA)
-  incrB = ->
-    obj.counterB += 1
-    obj.off('event', incrB)
-  obj.on('event', incrA)
-  obj.on('event', incrB)
-  obj.trigger('event')
-  obj.trigger('event')
-  obj.trigger('event')
-  equal(obj.counterA, 1, 'counterA should have only been incremented once.')
-  equal(obj.counterB, 1, 'counterB should have only been incremented once.')
-
-test 'bind a callback with a supplied context', ->
-  expect(1)
-
-  TestClass = ->
-    return this
-  TestClass.prototype.assertTrue = ->
-    ok(true, '`this` was bound to the callback')
-
-  obj = wire.extend({},wire.Event)
-
-  obj.on('event', (-> this.assertTrue()), (new TestClass))
-
-  obj.trigger('event')
-
-test 'nested trigger with unbind', ->
-  expect(1)
-  obj = {counter: 0}
-  wire.extend(obj, wire.Event)
-  incr1 = ->
-    obj.counter += 1
-    obj.off('event', incr1)
+  test 'on and trigger', ->
+    obj = {counter: 0}
+    extend(obj, Event)
+    obj.on('event', -> obj.counter += 1)
     obj.trigger('event')
-  incr2 = -> obj.counter += 1
-  obj.on('event', incr1)
-  obj.on('event', incr2)
-  obj.trigger('event')
-  equal(obj.counter, 3, 'counter should have been incremented three times')
+    equal(obj.counter, 1, 'counter should be incremented.')
+    obj.trigger('event')
+    obj.trigger('event')
+    obj.trigger('event')
+    obj.trigger('event')
+    equal(obj.counter, 5, 'counter should be incremented five times.')
 
-test 'callback list is not altered during trigger', ->
-  counter = 0
-  obj = wire.extend({}, wire.Event)
-  incr = -> counter++
-  obj.on('event', -> obj.on('event', incr).on('all', incr))
-    .trigger('event')
-  equal(counter, 0, 'bind does not alter callback list')
-  obj.off()
-    .on('event', -> obj.off('event', incr).off('all', incr))
-    .on('event', incr)
-    .on('all', incr)
-    .trigger('event')
-  equal(counter, 2, 'unbind does not alter callback list')
+  test 'binding and triggering multiple events', ->
+    obj = {counter: 0}
+    extend(obj, Event)
 
-test 'if no callback is provided, `on` is a noop', ->
-  expect(0)
-  wire.extend({}, wire.Event).on('test').trigger('test')
+    obj.on('a b c', -> obj.counter += 1)
+
+    obj.trigger('a')
+    equal(obj.counter, 1)
+
+    obj.trigger('a b')
+    equal(obj.counter, 3)
+
+    obj.trigger('c')
+    equal(obj.counter, 4)
+
+    obj.off('a c')
+    obj.trigger('a b c')
+    equal(obj.counter, 5)
+
+  test 'trigger all for each event' ->
+    obj = {counter: 0}
+    a = b = void
+    extend(obj, Event)
+    obj.on('all', (event) ->
+      obj.counter++
+      if (event == 'a') then a := true
+      if (event == 'b') then b := true
+    )
+    .trigger('a b')
+    ok(a)
+    ok(b)
+    equal(obj.counter, 2)
+
+  test 'on, then unbind all functions', ->
+    obj = {counter: 0}
+    extend(obj,Event)
+    callback = -> obj.counter += 1
+    obj.on('event', callback)
+    obj.trigger('event')
+    obj.off('event')
+    obj.trigger('event')
+    equal(obj.counter, 1, 'counter should have only been incremented once.')
+
+  test 'bind two callbacks, unbind only one', ->
+    obj = {counterA: 0, counterB: 0}
+    extend(obj,Event)
+    callback = -> obj.counterA += 1
+    obj.on('event', callback)
+    obj.on('event', -> obj.counterB += 1)
+    obj.trigger('event')
+    obj.off('event', callback)
+    obj.trigger('event')
+    equal(obj.counterA, 1, 'counterA should have only been incremented once.')
+    equal(obj.counterB, 2, 'counterB should have been incremented twice.')
+
+  test 'unbind a callback in the midst of it firing', ->
+    obj = {counter: 0}
+    extend(obj, Event)
+    callback = ->
+      obj.counter += 1
+      obj.off('event', callback)
+    obj.on('event', callback)
+    obj.trigger('event')
+    obj.trigger('event')
+    obj.trigger('event')
+    equal(obj.counter, 1, 'the callback should have been unbound.')
+
+  test 'two binds that unbind themeselves', ->
+    obj = {counterA: 0, counterB: 0}
+    extend(obj,Event)
+    incrA = ->
+      obj.counterA += 1
+      obj.off('event', incrA)
+    incrB = ->
+      obj.counterB += 1
+      obj.off('event', incrB)
+    obj.on('event', incrA)
+    obj.on('event', incrB)
+    obj.trigger('event')
+    obj.trigger('event')
+    obj.trigger('event')
+    equal(obj.counterA, 1, 'counterA should have only been incremented once.')
+    equal(obj.counterB, 1, 'counterB should have only been incremented once.')
+
+  test 'bind a callback with a supplied context', ->
+    expect(1)
+
+    TestClass = ->
+      return this
+    TestClass.prototype.assertTrue = ->
+      ok(true, '`this` was bound to the callback')
+
+    obj = extend({},Event)
+
+    obj.on('event', (-> this.assertTrue()), (new TestClass))
+
+    obj.trigger('event')
+
+  test 'nested trigger with unbind', ->
+    expect(1)
+    obj = {counter: 0}
+    extend(obj, Event)
+    incr1 = ->
+      obj.counter += 1
+      obj.off('event', incr1)
+      obj.trigger('event')
+    incr2 = -> obj.counter += 1
+    obj.on('event', incr1)
+    obj.on('event', incr2)
+    obj.trigger('event')
+    equal(obj.counter, 3, 'counter should have been incremented three times')
+
+  test 'callback list is not altered during trigger', ->
+    counter = 0
+    obj = extend({}, Event)
+    incr = -> counter++
+    obj.on('event', -> obj.on('event', incr).on('all', incr))
+      .trigger('event')
+    equal(counter, 0, 'bind does not alter callback list')
+    obj.off()
+      .on('event', -> obj.off('event', incr).off('all', incr))
+      .on('event', incr)
+      .on('all', incr)
+      .trigger('event')
+    equal(counter, 2, 'unbind does not alter callback list')
+
+  test 'if no callback is provided, `on` is a noop', ->
+    expect(0)
+    extend({}, Event).on('test').trigger('test')

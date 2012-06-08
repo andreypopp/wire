@@ -1,28 +1,32 @@
 'use strict'
 
-module 'wire'
+define (require) ->
 
-test 'traverse object by path', ->
-  o = {a: {b: {c: 1}}}
-  deepEqual(wire.path(o, 'a.b.c'), 1)
-  deepEqual(wire.path(o, 'a.b'), {c: 1})
-  deepEqual(wire.path(o, 'a'), {b: {c: 1}})
-  deepEqual(wire.path(o, ''), {a: {b: {c: 1}}})
-  deepEqual(wire.path(o), {a: {b: {c: 1}}})
+  {path, extend} = require('wire')
 
-  deepEqual(wire.path(o, 'b'), undefined)
-  deepEqual(wire.path(o, 'b.c'), undefined)
+  module 'wire'
 
-  o = {a: [1, {b: 2}]}
-  deepEqual(wire.path(o, 'a'), [1, {b: 2}])
-  deepEqual(wire.path(o, 'a.0'), 1)
-  deepEqual(wire.path(o, 'a.1'), {b: 2})
-  deepEqual(wire.path(o, 'a.1.b'), 2)
+  test 'traverse object by path', ->
+    o = {a: {b: {c: 1}}}
+    deepEqual(path(o, 'a.b.c'), 1)
+    deepEqual(path(o, 'a.b'), {c: 1})
+    deepEqual(path(o, 'a'), {b: {c: 1}})
+    deepEqual(path(o, ''), {a: {b: {c: 1}}})
+    deepEqual(path(o), {a: {b: {c: 1}}})
 
-test 'extend object with mixins', ->
-  window.o = o = {}
-  wire.extend(o, {a: 1}, {b: 2}, {c: 3, d: 4})
-  equal(o.a, 1)
-  equal(o.b, 2)
-  equal(o.c, 3)
-  equal(o.d, 4)
+    deepEqual(path(o, 'b'), undefined)
+    deepEqual(path(o, 'b.c'), undefined)
+
+    o = {a: [1, {b: 2}]}
+    deepEqual(path(o, 'a'), [1, {b: 2}])
+    deepEqual(path(o, 'a.0'), 1)
+    deepEqual(path(o, 'a.1'), {b: 2})
+    deepEqual(path(o, 'a.1.b'), 2)
+
+  test 'extend object with mixins', ->
+    window.o = o = {}
+    extend(o, {a: 1}, {b: 2}, {c: 3, d: 4})
+    equal(o.a, 1)
+    equal(o.b, 2)
+    equal(o.c, 3)
+    equal(o.d, 4)

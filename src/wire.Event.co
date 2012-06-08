@@ -1,13 +1,6 @@
 'use strict'
 
-((root, modulename, factory) ->
-  if typeof define === 'function' and define.amd
-    define ->
-      root.wire = root.wire or {}
-      root.wire[modulename] = factory()
-  else
-    root.wire = root.wire or {}
-    root.wire[modulename] = factory())(this, 'Event', ->
+define ->
 
   slice = Array.prototype.slice
   eventSplitterRe = /\s+/
@@ -73,4 +66,3 @@
         if node.callback != null
           node.callback.apply(node.context || this, args)
     this
-  )

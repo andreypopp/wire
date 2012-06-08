@@ -1,11 +1,6 @@
 'use strict'
 
-((root, factory) ->
-  if typeof define === 'function' and define.amd
-    define ->
-      root.wire = factory()
-  else
-    root.wire = factory())(this, ->
+define ->
 
   extend = (o) ->
     for x of Array::slice.call(arguments, 1)
@@ -27,11 +22,11 @@
 
   idCounter = 0
 
-  genId: (prefix) ->
+  genId = (prefix) ->
     id = idCounter++
     if prefix then prefix + id else '' + id
 
-  path: (o, p) ->
+  path = (o, p) ->
     if not p
       return o
     for p of p.split('.')
@@ -40,6 +35,4 @@
         return o
     return o
 
-  extend: extend
-  Base: Base
-)
+  {genId, extend, Base, path}
