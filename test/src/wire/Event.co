@@ -5,7 +5,7 @@ define (require) ->
   Event = require 'wire/Event'
   {extend} = require 'wire/base'
 
-  module 'wire.Event'
+  module 'wire/Event'
 
   test 'on and trigger', ->
     obj = {counter: 0}

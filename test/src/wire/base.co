@@ -4,7 +4,7 @@ define (require) ->
 
   {path, extend} = require 'wire/base'
 
-  module 'wire'
+  module 'wire/base'
 
   test 'traverse object by path', ->
     o = {a: {b: {c: 1}}}

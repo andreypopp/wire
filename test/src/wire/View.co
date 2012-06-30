@@ -6,7 +6,7 @@ define (require) ->
   View = require 'wire/View'
   {extend} = require 'wire/base'
 
-  module 'wire.View'
+  module 'wire/View'
 
   test 'propagates events from attributes', ->
     expect(1)

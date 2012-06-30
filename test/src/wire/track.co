@@ -6,7 +6,7 @@ define (require) ->
   track = require 'wire/track'
   Event = require 'wire/Event'
 
-  module 'track'
+  module 'wire/track'
 
   test 'plain attr track and then change fires event', ->
     o = {counter: 0, sync: 0}
