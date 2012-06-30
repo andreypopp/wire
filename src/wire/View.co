@@ -2,15 +2,15 @@
 
 define (require) ->
 
-  Event = require('wire.Event')
-  {Base, extend, path} = require('wire')
+  Event = require 'wire/Event'
+  {Base, extend, path} = require 'wire/base'
 
   eventSplitterRe = /\s+/
 
   specialAttributes = ['events']
 
   class View extends Base
-    @mixin(Event)
+    @mixin Event
 
     tag: 'div'
 
@@ -65,13 +65,13 @@ define (require) ->
           else
             v = let
               ~> this[v].apply(this, arguments)
-        [ev, path] = k.split(eventSplitterRe)
-        if path is undefined
+        [ev, pth] = k.split(eventSplitterRe)
+        if pth is undefined
           this.el.bind(ev, v)
-        else if path.slice(0, 5) is 'this.'
-          path(this, path.slice(5)).on(ev, v)
+        else if pth.slice(0, 5) is 'this.'
+          path(this, pth.slice(5)).on(ev, v)
         else
-          this.el.on(ev, path, v)
+          this.el.on(ev, pth, v)
 
     # Scoped DOM selector
     #

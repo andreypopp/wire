@@ -2,9 +2,9 @@
 
 define (require) ->
 
-  Event = require('wire.Event')
-  View = require('wire.View')
-  {extend} = require('wire')
+  Event = require 'wire/Event'
+  View = require 'wire/View'
+  {extend} = require 'wire/base'
 
   module 'wire.View'
 

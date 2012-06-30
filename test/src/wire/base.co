@@ -2,7 +2,7 @@
 
 define (require) ->
 
-  {path, extend} = require('wire')
+  {path, extend} = require 'wire/base'
 
   module 'wire'
 

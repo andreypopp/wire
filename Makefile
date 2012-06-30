@@ -1,8 +1,8 @@
-SRC = $(wildcard src/*.co)
+SRC = $(shell find src -type f -name '*.co')
 LIB = $(SRC:src/%.co=lib/%.js)
 
-TESTSRC = $(wildcard testsrc/*.co)
-TESTLIB = $(TESTSRC:testsrc/%.co=test/%.js)
+TESTSRC = $(shell find test/src -type f -name '*.co')
+TESTLIB = $(TESTSRC:test/src/%.co=test/lib/tests/%.js)
 
 COCO = coco -bcp
 
@@ -19,9 +19,10 @@ lib/%.js: src/%.co
 	@mkdir -p $(@D)
 	$(COCO) $< > $@
 
-test/%.js: testsrc/%.co
+test/lib/tests/%.js: test/src/%.co
+	@mkdir -p $(@D)
 	$(COCO) $< > $@
 
 clean:
 	rm -rf lib/
-	rm $(TESTLIB)
+	rm -rf $(TESTLIB)

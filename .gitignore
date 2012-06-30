@@ -1,2 +1,2 @@
-test/*.js
-lib/*.js
+test/**.js
+lib/**.js

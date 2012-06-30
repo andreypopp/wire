@@ -2,8 +2,8 @@
 
 define (require) ->
 
-  Event = require('wire.Event')
-  {extend} = require('wire')
+  Event = require 'wire/Event'
+  {extend} = require 'wire/base'
 
   module 'wire.Event'
 
