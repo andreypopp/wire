@@ -26,8 +26,20 @@ define (require) ->
       options:
         exprs:
           expr: (node, data, expr, templater) ->
-            val = templater._envEval(expr, data, node.data)
+            val = templater.envEval(expr, data, node.data)
             "processed #{val}"
+      data: {nested:{value:'pass 1'}}
+      res: '<div id="ex1">processed pass 1</div>')
+
+  test 'exprReturnNode', ->
+    runTest(
+      tpl: '<div id="ex1">${expr:nested.value}</div>'
+      options:
+        exprs:
+          expr: (node, data, expr, templater) ->
+            val = templater.envEval(expr, data, node.data)
+            node.cloneNode()
+            node.innerHTML = "processed #{val}"
       data: {nested:{value:'pass 1'}}
       res: '<div id="ex1">processed pass 1</div>')
 

@@ -64,7 +64,7 @@ define (require) ->
 
     #
     # Cached regex used to detect if a script is capable of being interpreted
-    # using Template._property() or if we need to use Template._envEval()
+    # using Template._property() or if we need to use Template.envEval()
     #
     _isPropertyScript: /^[_a-zA-Z0-9.]*$/
 
@@ -165,7 +165,7 @@ define (require) ->
     #
     _processString: (value, data) ->
       value.replace this._templateRegion, (path) ~>
-        insert = this._envEval(path.slice(2, -1), data, value)
+        insert = this.envEval(path.slice(2, -1), data, value)
         if this.options.blankNullUndefined && insert == null
           insert = ''
         insert
@@ -173,7 +173,7 @@ define (require) ->
     #
     # Handle <x if="${...}">
     # @param node An element with an 'if' attribute
-    # @param data The data to use with _envEval()
+    # @param data The data to use with envEval()
     # @returns true if processing should continue, false otherwise
     #
     _processIf: (node, data) ->
@@ -183,7 +183,7 @@ define (require) ->
         value = this._stripBraces(originalValue)
         recurse = true
         try
-          reply = this._envEval(value, data, originalValue)
+          reply = this.envEval(value, data, originalValue)
           recurse = !!reply
         catch ex
           this._handleError("Error with '#{value}'", ex)
@@ -213,7 +213,7 @@ define (require) ->
     # in getting the array). It delegates to _processForEachLoop to actually
     # unroll the data.
     # @param node An element with a 'foreach' attribute
-    # @param data The data to use with _envEval()
+    # @param data The data to use with envEval()
     #
     _processForEach: (node, data) ->
       this.stack.push('foreach')
@@ -232,7 +232,7 @@ define (require) ->
           value = this._stripBraces(nameArr[1].trim())
         node.removeAttribute('foreach')
         try
-          evaled = this._envEval(value, data, originalValue)
+          evaled = this.envEval(value, data, originalValue)
           this._handleAsync evaled, node, (reply, siblingNode) ~>
             this._processForEachLoop(reply, node, siblingNode, data, paramName)
           node.parentNode.removeChild(node)
@@ -297,7 +297,7 @@ define (require) ->
     # sections parsed out. We replace the node by altering node.parentNode but
     # we could probably use a DOM Text API to achieve the same thing.
     # @param node The Text node to work on
-    # @param data The data to use in calls to _envEval()
+    # @param data The data to use in calls to envEval()
     #
     _processTextNode: (node, data) ->
       # Replace references in other attributes
@@ -322,7 +322,7 @@ define (require) ->
             if isExpr && isExpr[1] in this.exprs
               part = this.exprs[isExpr[1]](node, data, isExpr[2], this)
             else
-              part = this._envEval(part.slice(1), data, node.data)
+              part = this.envEval(part.slice(1), data, node.data)
           this._handleAsync part, node, (reply, siblingNode) ~>
             doc = siblingNode.ownerDocument
             if reply == null
@@ -440,7 +440,7 @@ define (require) ->
     # @return The return value of the script, or the error message if the script
     # execution failed.
     #
-    _envEval: (script, data, frame) ->
+    envEval: (script, data, frame) ->
       try
         this.stack.push(frame.replace(/\s+/g, ' '))
         if this._isPropertyScript.test(script)
