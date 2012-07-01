@@ -1,0 +1,216 @@
+'use strict'
+
+define (require) ->
+
+  {template} = require 'wire/template'
+
+  module 'wire/template'
+
+  runTest = (options) ->
+    {tpl, data, res, options} = options
+    wrapper = $('<div></div>')
+    wrapper.html(tpl)
+    template(wrapper.get(0), data, options)
+    rendered = wrapper.html()
+    equal(rendered, res)
+
+  test 'simpleNested', ->
+    runTest(
+      tpl: '<div id="ex1">${nested.value}</div>'
+      data: {nested:{ value:'pass 1' }}
+      res: '<div id="ex1">pass 1</div>')
+
+  test 'returnDom', ->
+    runTest(
+      tpl: '<div id="ex2">${__element.ownerDocument.createTextNode(\'pass 2\')}</div>',
+      options: { allowEval: true },
+      data: {},
+      res: '<div id="ex2">pass 2</div>')
+
+  test 'srcChange', ->
+    runTest(
+      tpl: '<img _src="${fred}">'
+      options: {}
+      data: { fred:'green.png' }
+      res: '<img src="green.png">')
+
+  test 'ifTrue', ->
+    runTest(
+      tpl: '<p if="${name !== \'jim\'}">hello ${name}</p>'
+      options: {allowEval: true}
+      data: { name: 'fred' }
+      res: '<p>hello fred</p>')
+ 
+  test 'ifFalse', ->
+    runTest(
+      tpl: '<p if="${name !== \'jim\'}">hello ${name}</p>'
+      options: {allowEval: true}
+      data: {name: 'jim'}
+      res: '')
+ 
+  test 'simpleLoop', ->
+    runTest(
+      tpl: '<p foreach="index in ${[ 1, 2, 3 ]}">${index}</p>',
+      options: { allowEval: true },
+      data: {},
+      res: '<p>1</p><p>2</p><p>3</p>')
+ 
+  test 'loopElement', ->
+    runTest(
+      tpl: '<loop foreach="i in ${array}">${i}</loop>',
+      options: {},
+      data: { array: [ 1, 2, 3 ] },
+      res: '123')
+ 
+# // Bug 692028: DOMTemplate memory leak with asynchronous arrays
+# // Bug 692031: DOMTemplate async loops do not drop the loop element
+# function(promises) { return {
+#   name: 'asyncLoopElement',
+#   tpl: '<loop foreach="i in ${array}">${i}</loop>',
+#   data: { array: delayReply([1, 2, 3], promises) },
+#   res: '<span></span>',
+#   later: '123'
+# };},
+#
+# function() { return {
+#   name: 'saveElement',
+#   tpl: '<p save="${element}">${name}</p>',
+#   data: { name: 'pass 8' },
+#   res: '<p>pass 8</p>',
+#   also: function(options) {
+#     ok(options.data.element.innerHTML, 'pass 9', 'saveElement saved');
+#     delete options.data.element;
+#   }
+# };},
+
+  test 'useElement', ->
+    runTest(
+      tpl: '<p id="pass9">${adjust(__element)}</p>'
+      options: { allowEval: true }
+      data:
+        adjust: (element) ->
+          equal('pass9', element.id)
+          return 'pass 9b'
+      res: '<p id="pass9">pass 9b</p>')
+
+# function(promises) { return {
+#   name: 'asyncInline',
+#   tpl: '${delayed}',
+#   data: { delayed: delayReply('inline', promises) },
+#   res: '<span></span>',
+#   later: 'inline'
+# };},
+#
+# // Bug 692028: DOMTemplate memory leak with asynchronous arrays
+# function(promises) { return {
+#   name: 'asyncArray',
+#   tpl: '<p foreach="i in ${delayed}">${i}</p>',
+#   data: { delayed: delayReply([1, 2, 3], promises) },
+#   res: '<span></span>',
+#   later: '<p>1</p><p>2</p><p>3</p>'
+# };},
+#
+# function(promises) { return {
+#   name: 'asyncMember',
+#   tpl: '<p foreach="i in ${delayed}">${i}</p>',
+#   data: {
+#     delayed: [
+#       delayReply(4, promises),
+#       delayReply(5, promises),
+#       delayReply(6, promises)
+#     ]
+#   },
+#   res: '<span></span><span></span><span></span>',
+#   later: '<p>4</p><p>5</p><p>6</p>'
+# };},
+#
+# // Bug 692028: DOMTemplate memory leak with asynchronous arrays
+# function(promises) { return {
+#   name: 'asyncBoth',
+#   tpl: '<p foreach="i in ${delayed}">${i}</p>',
+#   data: {
+#     delayed: delayReply([
+#       delayReply(4, promises),
+#       delayReply(5, promises),
+#       delayReply(6, promises)
+#     ], promises)
+#   },
+#   res: '<span></span>',
+#   later: '<p>4</p><p>5</p><p>6</p>'
+# };},
+
+  # Bug 701762: DOMTemplate fails when ${foo()} returns undefined
+  test 'functionReturningUndefiend', ->
+    runTest(
+      tpl: '<p>${foo()}</p>'
+      options: {allowEval: true}
+      data: {
+        foo: -> undefined
+      }
+      res: '<p>undefined</p>')
+ 
+  # Bug 702642: DOMTemplate is relatively slow when evaluating JS ${}
+  test 'propertySimple', ->
+    runTest(
+      tpl: '<p>${a.b.c}</p>'
+      data: { a: { b: { c: 'hello' } } }
+      res: '<p>hello</p>')
+
+  test 'propertyPass', ->
+    runTest(
+      name: '',
+      tpl: '<p>${Math.max(1, 2)}</p>'
+      options: {allowEval: true}
+      res: '<p>2</p>')
+
+  test 'propertyFail', ->
+    runTest(
+      name: ''
+      tpl: '<p>${Math.max(1, 2)}</p>'
+      res: '<p>${Math.max(1, 2)}</p>')
+
+  # Bug 723431: DOMTemplate should allow customization of display of
+  # null/undefined values
+  test 'propertyUndefAttrFull', ->
+    runTest(
+      name: ''
+      tpl: '<p>${nullvar}|${undefinedvar1}|${undefinedvar2}</p>'
+      data: {nullvar: null, undefinedvar1: undefined}
+      res: '<p>null|undefined|undefined</p>')
+ 
+  test 'propertyUndefAttrBlank', ->
+    runTest(
+      name: ''
+      tpl: '<p>${nullvar}|${undefinedvar1}|${undefinedvar2}</p>'
+      data: {nullvar: null, undefinedvar1: undefined}
+      options: {blankNullUndefined: true}
+      res: '<p>||</p>')
+
+  test 'propertyUndefAttrFull', ->
+    runTest(
+      name: ''
+      tpl: '<div><p value="${nullvar}"></p><p value="${undefinedvar1}"></p><p value="${undefinedvar2}"></p></div>'
+      data: {nullvar: null, undefinedvar1: undefined}
+      res: '<div><p value="null"></p><p value="undefined"></p><p value="undefined"></p></div>')
+ 
+  test 'propertyUndefAttrBlank', ->
+    runTest(
+      name: ''
+      tpl: '<div><p value="${nullvar}"></p><p value="${undefinedvar1}"></p><p value="${undefinedvar2}"></p></div>'
+      data: {nullvar: null, undefinedvar1: undefined}
+      options: {blankNullUndefined: true}
+      res: '<div><p value=""></p><p value=""></p><p value=""></p></div>')
+ 
+  # Bug 762673 - DOMTemplate should support DOM-level 0 events
+  test 'dom0event1', ->
+    runTest(
+      name: ''
+      tpl: '<div onclick="alert(\'${name}\');"></div>'
+      data: {name: 'fred'}
+      res: '<div onclick="alert(\'fred\');"></div>')
+ 
+  test 'dom0event2', ->
+    runTest(
+      tpl: '<div onclick="${name}"></div>'
+      data: {name: 'alert(\'fred\');'}
+      res: '<div onclick="alert(\'fred\');"></div>')
