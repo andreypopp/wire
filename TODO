@@ -1,11 +1,16 @@
-* Proper View.dispose() -- unbind DOM events, ...
+- wire/template
+  - support for nested expressions
+    bind:format:value
+  - support for expressions inside attrs
+    <div class="${expr:value}">...</div>
+  - restricted envEval
+    - only subset of javascript
+    - can be used for tracking dependencies for data-binding
 
-* Provide module format compatible with AMD, CommonJS and browser globals.
-  See https://github.com/umdjs/umd for examples. Use preprocessor for that.
+- wire/track
+  - transactional mutation tracking
 
-* Integrate jslint (or jshint?).
-
-* Try to use closure compiler for type checking.
-
-* Try to provide builds with uglify-js, closure compiler with different
-  compilation levels.
+- common
+  - Static analysis of source code
+    - google closure compiler
+    - jslint, jshint
