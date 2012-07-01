@@ -292,58 +292,47 @@ define (require) ->
     # @param node The Text node to work on
     # @param data The data to use in calls to _envEval()
     #
-    `prototype._processTextNode = function(node, data) {
-      // Replace references in other attributes
-      var value = node.data;
-      // We can't use the string.replace() with function trick (see generic
-      // attribute processing in processNode()) because we need to support
-      // functions that return DOM nodes, so we can't have the conversion to a
-      // string.
-      // Instead we process the string as an array of parts. In order to split
-      // the string up, we first replace '${' with '\uF001$' and '}' with '\uF002'
-      // We can then split using \uF001 or \uF002 to get an array of strings
-      // where scripts are prefixed with $.
-      // \uF001 and \uF002 are just unicode chars reserved for private use.
-      value = value.replace(this._templateRegion, '\uF001$$$1\uF002');
-      var parts = value.split(this._splitSpecial);
-      if (parts.length > 1) {
-        parts.forEach(function(part) {
-          if (part === null || part === undefined || part === '') {
-            return;
-          }
-          if (part.charAt(0) === '$') {
-            part = this._envEval(part.slice(1), data, node.data);
-          }
-          this._handleAsync(part, node, function(reply, siblingNode) {
-            var doc = siblingNode.ownerDocument;
-            if (reply == null) {
-              reply = this.options.blankNullUndefined ? '' : '' + reply;
-            }
-            if (typeof reply.cloneNode === 'function') {
-              // i.e. if (reply instanceof Element) { ...
-              reply = this._maybeImportNode(reply, doc);
-              siblingNode.parentNode.insertBefore(reply, siblingNode);
-            } else if (typeof reply.item === 'function' && reply.length) {
-              // NodeLists can be live, in which case _maybeImportNode can
-              // remove them from the document, and thus the NodeList, which in
-              // turn breaks iteration. So first we clone the list
-              var list = Array.prototype.slice.call(reply, 0);
-              list.forEach(function(child) {
-                var imported = this._maybeImportNode(child, doc);
-                siblingNode.parentNode.insertBefore(imported, siblingNode);
-              }.bind(this));
-            }
-            else {
-              // if thing isn't a DOM element then wrap its string value in one
-              reply = doc.createTextNode(reply.toString());
-              siblingNode.parentNode.insertBefore(reply, siblingNode);
-            }
-
-          }.bind(this));
-        }, this);
-        node.parentNode.removeChild(node);
-      }
-    };`
+    _processTextNode: (node, data) ->
+      # Replace references in other attributes
+      value = node.data
+      # We can't use the string.replace() with function trick (see generic
+      # attribute processing in processNode()) because we need to support
+      # functions that return DOM nodes, so we can't have the conversion to a
+      # string.
+      # Instead we process the string as an array of parts. In order to split
+      # the string up, we first replace '${' with '\uF001$' and '}' with '\uF002'
+      # We can then split using \uF001 or \uF002 to get an array of strings
+      # where scripts are prefixed with $.
+      # \uF001 and \uF002 are just unicode chars reserved for private use.
+      value = value.replace(this._templateRegion, '\uF001$$$1\uF002')
+      parts = value.split(this._splitSpecial)
+      if parts.length > 1
+        parts.forEach (part) ~>
+          if part === null || part === undefined || part === ''
+            return
+          if part.charAt(0) === '$'
+            part = this._envEval(part.slice(1), data, node.data)
+          this._handleAsync part, node, (reply, siblingNode) ~>
+            doc = siblingNode.ownerDocument
+            if reply == null
+              reply = if this.options.blankNullUndefined then '' else '' + reply
+            if typeof reply.cloneNode === 'function'
+              # i.e. if (reply instanceof Element) { ...
+              reply = this._maybeImportNode(reply, doc)
+              siblingNode.parentNode.insertBefore(reply, siblingNode)
+            else if typeof reply.item === 'function' && reply.length
+              # NodeLists can be live, in which case _maybeImportNode can
+              # remove them from the document, and thus the NodeList, which in
+              # turn breaks iteration. So first we clone the list
+              list = Array.prototype.slice.call(reply, 0)
+              list.forEach (child) ~>
+                imported = this._maybeImportNode(child, doc)
+                siblingNode.parentNode.insertBefore(imported, siblingNode)
+            else
+              # if thing isn't a DOM element then wrap its string value in one
+              reply = doc.createTextNode(reply.toString())
+              siblingNode.parentNode.insertBefore(reply, siblingNode)
+        node.parentNode.removeChild(node)
 
     #
     # Return node or a import of node, if it's not in the given document
@@ -351,9 +340,8 @@ define (require) ->
     # @param doc The document that the given node should belong to
     # @return A node that belongs to the given document
     #
-    `prototype._maybeImportNode = function(node, doc) {
-      return node.ownerDocument === doc ? node : doc.importNode(node, true);
-    }`
+    _maybeImportNode: (node, doc) ->
+      return if node.ownerDocument === doc then node else doc.importNode(node, true)
 
     #
     # A function to handle the fact that some nodes can be promises, so we check
