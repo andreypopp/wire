@@ -17,8 +17,19 @@ define (require) ->
   test 'simpleNested', ->
     runTest(
       tpl: '<div id="ex1">${nested.value}</div>'
-      data: {nested:{ value:'pass 1' }}
+      data: {nested:{value:'pass 1'}}
       res: '<div id="ex1">pass 1</div>')
+
+  test 'expr', ->
+    runTest(
+      tpl: '<div id="ex1">${expr:nested.value}</div>'
+      options:
+        exprs:
+          expr: (node, data, expr, templater) ->
+            val = templater._envEval(expr, data, node.data)
+            "processed #{val}"
+      data: {nested:{value:'pass 1'}}
+      res: '<div id="ex1">processed pass 1</div>')
 
   test 'returnDom', ->
     runTest(
