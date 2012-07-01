@@ -9,7 +9,7 @@ define (require) ->
 
   specialAttributes = ['events']
 
-  class View extends Base
+  class BaseView extends Base
     @mixin Event
 
     tag: 'div'
@@ -88,3 +88,5 @@ define (require) ->
     dispose: ->
       this.unbindEvents()
       this.el.remove()
+
+  {BaseView}

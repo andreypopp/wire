@@ -3,7 +3,7 @@
 define (require) ->
 
   Event = require 'wire/Event'
-  View = require 'wire/View'
+  {BaseView} = require 'wire/View'
   {extend} = require 'wire/base'
 
   module 'wire/View'
@@ -14,7 +14,7 @@ define (require) ->
     o = {}
     extend(o, Event)
 
-    class MyView extends View
+    class MyView extends BaseView
       -> super ...
 
       events:
@@ -27,7 +27,7 @@ define (require) ->
   test 'propagates events from DOM', ->
     expect(3)
 
-    class MyView extends View
+    class MyView extends BaseView
       -> super ...
 
       events:
