@@ -38,12 +38,26 @@ define (require) ->
     runTest(
       tpl: '<p if="${name !== \'jim\'}">hello ${name}</p>'
       options: {allowEval: true}
-      data: { name: 'fred' }
+      data: {name: 'fred'}
       res: '<p>hello fred</p>')
+
+  test 'ifTrueBlock', ->
+    runTest(
+      tpl: '<block if="${name !== \'jim\'}">hello ${name}<span>!</span></block>'
+      options: {allowEval: true}
+      data: {name: 'fred'}
+      res: 'hello fred<span>!</span>')
  
   test 'ifFalse', ->
     runTest(
       tpl: '<p if="${name !== \'jim\'}">hello ${name}</p>'
+      options: {allowEval: true}
+      data: {name: 'jim'}
+      res: '')
+
+  test 'ifFalseBlock', ->
+    runTest(
+      tpl: '<block if="${name !== \'jim\'}">hello ${name}<span>!</span></block>'
       options: {allowEval: true}
       data: {name: 'jim'}
       res: '')
@@ -55,18 +69,18 @@ define (require) ->
       data: {},
       res: '<p>1</p><p>2</p><p>3</p>')
  
-  test 'loopElement', ->
+  test 'loopBlock', ->
     runTest(
-      tpl: '<loop foreach="i in ${array}">${i}</loop>',
+      tpl: '<block foreach="i in ${array}">${i}</block>',
       options: {},
       data: { array: [ 1, 2, 3 ] },
       res: '123')
  
 # // Bug 692028: DOMTemplate memory leak with asynchronous arrays
-# // Bug 692031: DOMTemplate async loops do not drop the loop element
+# // Bug 692031: DOMTemplate async loops do not drop the block element
 # function(promises) { return {
 #   name: 'asyncLoopElement',
-#   tpl: '<loop foreach="i in ${array}">${i}</loop>',
+#   tpl: '<block foreach="i in ${array}">${i}</block>',
 #   data: { array: delayReply([1, 2, 3], promises) },
 #   res: '<span></span>',
 #   later: '123'

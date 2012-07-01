@@ -183,14 +183,24 @@ define (require) ->
           recurse = false
         if !recurse
           node.parentNode.removeChild(node)
-        node.removeAttribute('if')
+        else
+          if node.nodeName.toLowerCase() === 'block'
+            curNode = node
+            for childNode of node.childNodes
+              clone = childNode.cloneNode(true)
+              node.parentNode.insertBefore(clone, curNode.nextSibling)
+              curNode = clone
+              this.processNode(clone, data)
+            node.parentNode.removeChild(node)
+          else
+            node.removeAttribute('if')
         recurse
       finally
         this.stack.pop()
 
     #
     # Handle <x foreach="param in ${array}"> and the special case of
-    # <loop foreach="param in ${array}">.
+    # <block foreach="param in ${array}">.
     # This function is responsible for extracting what it has to do from the
     # attributes, and getting the data to work on (including resolving promises
     # in getting the array). It delegates to _processForEachLoop to actually
@@ -233,7 +243,7 @@ define (require) ->
     # @param sibling The sibling node to which we add things
     # @param data the data to use for node processing
     # @param paramName foreach loops have a name for the parameter currently being
-    # processed. The default is 'param'. e.g. <loop foreach="param in ${x}">...
+    # processed. The default is 'param'. e.g. <block foreach="param in ${x}">...
     #
     _processForEachLoop: (set, template, sibling, data, paramName) ->
       if Array.isArray(set)
@@ -261,7 +271,7 @@ define (require) ->
       try
         this._handleAsync member, siblingNode, (reply, node) ~>
           data[paramName] = reply
-          if template.nodeName.toLowerCase() === 'loop'
+          if template.nodeName.toLowerCase() === 'block'
             for childNode of template.childNodes
               clone = childNode.cloneNode(true)
               node.parentNode.insertBefore(clone, node)
