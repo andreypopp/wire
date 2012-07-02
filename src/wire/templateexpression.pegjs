@@ -31,7 +31,7 @@ bool "boolean"
   = "true" / "false"
 
 str "string"
-  = "\"" v:("\\\""/[^\"]+)* "\"" { return "str: " + v.join(""); }
+  = "\"" v:[^\"]* "\"" { return '"' + v.join("") + '"'; }
 
 obj
   = "{" ws* kv:keyvallist? ws* "}" {
@@ -62,7 +62,7 @@ ifexpr
 
 callexpr
   = func:path "(" args:exprlist? ")" {
-  return func + "(" + args.join(", ") + ")"; }
+  return func + "(" + (args ? args.join(", ") : "") + ")"; }
 
 exprlist
   = x:expr xs:("," ws* expr)* {

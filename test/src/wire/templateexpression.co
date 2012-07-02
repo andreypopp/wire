@@ -1,0 +1,32 @@
+define (require) ->
+
+  {parse} = require 'wire/templateexpression'
+
+  module "wire/templateexpression"
+
+  test "literals", ->
+    equal(parse("1"), "1")
+    equal(parse("a"), "a")
+    equal(parse("a.b.c"), "a.b.c")
+    equal(parse('""'), '""')
+    equal(parse('"abc d"'), '"abc d"')
+    equal(parse('[1,  a,"c", d]'), '[1, a, "c", d]')
+    equal(parse('{a: 1,  b: "c"}'), '{a: 1, b: "c"}')
+
+  test "ifExpression", ->
+    equal(parse("if (1) yes else no"), "if (1) then yes else no")
+    equal(parse("if (1 +2) yes else no"), "if (1 + 2) then yes else no")
+
+  test "callExpression", ->
+    equal(parse("a()"), "a()")
+    equal(parse("a(1)"), "a(1)")
+    equal(parse("a(1, b)"), "a(1, b)")
+    equal(parse("a.v(1, b)"), "a.v(1, b)")
+    equal(parse("a.v(1 + c, b)"), "a.v(1 + c, b)")
+
+  test "binExpression", ->
+    equal(parse("1 + 2"), "1 + 2")
+    equal(parse("1+ 2"), "1 + 2")
+    equal(parse("1 +2"), "1 + 2")
+    equal(parse("1+2"), "1 + 2")
+    equal(parse("1 + 2 + 3"), "1 + 2 + 3")

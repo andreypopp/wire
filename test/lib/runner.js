@@ -3,5 +3,6 @@ define([
   'tests/wire/track',
   'tests/wire/Event',
   'tests/wire/View',
-  'tests/wire/template'
+  'tests/wire/template',
+  'tests/wire/templateexpression'
   ], function() {});
