@@ -1,5 +1,11 @@
+{
+  var refs = [];
+}
+
 start
-  = expr
+  = expr:expr {
+    return [expr, refs];
+  }
 
 expr
   = additive
@@ -51,7 +57,11 @@ id "id"
 
 path "path"
   = id1:id id2:("." id)* {
-  return id1 + id2.map(function(e) { return e.join(""); }).join(""); }
+    var ref = id1 + id2.map(function(e) { return e.join(""); }).join("");
+    if (refs.indexOf(ref) === -1)
+      refs.push(ref)
+    return ref;
+  }
 
 integer "integer"
   = digits:[0-9]+ { return digits.join(""); }
