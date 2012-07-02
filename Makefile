@@ -27,7 +27,8 @@ lib/%.js: src/%.co
 
 lib/%.js: src/%.pegjs
 	@mkdir -p $(@D)
-	$(PEGJS) $< $@
+	$(PEGJS) -e 'var __parser' $< $@
+	echo 'define(__parser);' >> $@
 
 test/lib/tests/%.js: test/src/%.co
 	@mkdir -p $(@D)
