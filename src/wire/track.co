@@ -2,7 +2,7 @@
 
 define ->
 
-  (o, attrs) ->
+  track = (o, attrs) ->
     attrs = attrs.split(/\s+/)
     for attr of attrs
       let
@@ -37,3 +37,5 @@ define ->
 
           Object.getOwnPropertyDescriptor(o, attr).set?.isTracker = true
     return
+
+  {track}

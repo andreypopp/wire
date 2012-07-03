@@ -2,14 +2,14 @@
 
 define (require) ->
 
-  Event = require 'wire/Event'
+  {Events} = require 'wire/event'
   {extend} = require 'wire/base'
 
-  module 'wire/Event'
+  module 'wire/event'
 
   test 'on and trigger', ->
     obj = {counter: 0}
-    extend(obj, Event)
+    extend(obj, Events)
     obj.on('event', -> obj.counter += 1)
     obj.trigger('event')
     equal(obj.counter, 1, 'counter should be incremented.')
@@ -21,7 +21,7 @@ define (require) ->
 
   test 'binding and triggering multiple events', ->
     obj = {counter: 0}
-    extend(obj, Event)
+    extend(obj, Events)
 
     obj.on('a b c', -> obj.counter += 1)
 
@@ -41,7 +41,7 @@ define (require) ->
   test 'trigger all for each event' ->
     obj = {counter: 0}
     a = b = void
-    extend(obj, Event)
+    extend(obj, Events)
     obj.on('all', (event) ->
       obj.counter++
       if (event == 'a') then a := true
@@ -54,7 +54,7 @@ define (require) ->
 
   test 'on, then unbind all functions', ->
     obj = {counter: 0}
-    extend(obj,Event)
+    extend(obj,Events)
     callback = -> obj.counter += 1
     obj.on('event', callback)
     obj.trigger('event')
@@ -64,7 +64,7 @@ define (require) ->
 
   test 'bind two callbacks, unbind only one', ->
     obj = {counterA: 0, counterB: 0}
-    extend(obj,Event)
+    extend(obj,Events)
     callback = -> obj.counterA += 1
     obj.on('event', callback)
     obj.on('event', -> obj.counterB += 1)
@@ -76,7 +76,7 @@ define (require) ->
 
   test 'unbind a callback in the midst of it firing', ->
     obj = {counter: 0}
-    extend(obj, Event)
+    extend(obj, Events)
     callback = ->
       obj.counter += 1
       obj.off('event', callback)
@@ -88,7 +88,7 @@ define (require) ->
 
   test 'two binds that unbind themeselves', ->
     obj = {counterA: 0, counterB: 0}
-    extend(obj,Event)
+    extend(obj,Events)
     incrA = ->
       obj.counterA += 1
       obj.off('event', incrA)
@@ -111,7 +111,7 @@ define (require) ->
     TestClass.prototype.assertTrue = ->
       ok(true, '`this` was bound to the callback')
 
-    obj = extend({},Event)
+    obj = extend({},Events)
 
     obj.on('event', (-> this.assertTrue()), (new TestClass))
 
@@ -120,7 +120,7 @@ define (require) ->
   test 'nested trigger with unbind', ->
     expect(1)
     obj = {counter: 0}
-    extend(obj, Event)
+    extend(obj, Events)
     incr1 = ->
       obj.counter += 1
       obj.off('event', incr1)
@@ -133,7 +133,7 @@ define (require) ->
 
   test 'callback list is not altered during trigger', ->
     counter = 0
-    obj = extend({}, Event)
+    obj = extend({}, Events)
     incr = -> counter++
     obj.on('event', -> obj.on('event', incr).on('all', incr))
       .trigger('event')
@@ -147,4 +147,4 @@ define (require) ->
 
   test 'if no callback is provided, `on` is a noop', ->
     expect(0)
-    extend({}, Event).on('test').trigger('test')
+    extend({}, Events).on('test').trigger('test')

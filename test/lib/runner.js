@@ -1,8 +1,8 @@
 define([
   'tests/wire/base',
   'tests/wire/track',
-  'tests/wire/Event',
-  'tests/wire/View',
+  'tests/wire/event',
+  'tests/wire/view',
   'tests/wire/template',
   'tests/wire/templateexpression'
   ], function() {});

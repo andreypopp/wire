@@ -2,7 +2,7 @@
 
 define (require) ->
 
-  Event = require 'wire/Event'
+  {Events} = require 'wire/event'
   {BaseView} = require 'wire/view'
   {extend} = require 'wire/base'
 
@@ -12,7 +12,7 @@ define (require) ->
     expect(1)
 
     o = {}
-    extend(o, Event)
+    extend(o, Events)
 
     class MyView extends BaseView
       -> super ...

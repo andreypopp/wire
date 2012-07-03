@@ -2,7 +2,7 @@
 
 define (require) ->
 
-  Event = require 'wire/Event'
+  {Events} = require 'wire/event'
   {Base, extend, path, genId} = require 'wire/base'
 
   eventSplitterRe = /\s+/
@@ -10,7 +10,7 @@ define (require) ->
   specialAttributes = ['events']
 
   class BaseView extends Base
-    @mixin Event
+    @mixin Events
 
     tag: 'div'
 
