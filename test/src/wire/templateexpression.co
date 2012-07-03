@@ -16,10 +16,10 @@ define (require) ->
   test "ifExpression", ->
     deepEqual(
       parse("if (1) yes else no"),
-      ["if (1) then yes else no", ["yes", "no"]])
+      ["if (1) { yes } else { no }", ["yes", "no"]])
     deepEqual(
       parse("if (1 +2) yes else no"),
-      ["if (1 + 2) then yes else no", ["yes", "no"]])
+      ["if (1 + 2) { yes } else { no }", ["yes", "no"]])
 
   test "callExpression", ->
     deepEqual(parse("a()"), ["a()", ["a"]])

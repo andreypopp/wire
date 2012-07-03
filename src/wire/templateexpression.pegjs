@@ -68,7 +68,7 @@ integer "integer"
 
 ifexpr
   = "if" ws* "(" cond:expr ")" ws* yes:expr no:(ws+ "else" ws+ expr)? {
-  return "if (" + cond + ") then " + yes + (no ? " else " + no[3] : ""); }
+  return "if (" + cond + ") { " + yes + " }" + (no ? " else { " + no[3] + " }": ""); }
 
 callexpr
   = func:path "(" args:exprlist? ")" {
