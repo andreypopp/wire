@@ -18,13 +18,26 @@ define (require) ->
       parse("if (1) yes else no"),
       ["if (1) { yes } else { no }", ["yes", "no"]])
     deepEqual(
+      parse("if (1) yes else {no}"),
+      ["if (1) { yes } else { no }", ["yes", "no"]])
+    deepEqual(
+      parse("if (1) {yes} else {no}"),
+      ["if (1) { yes } else { no }", ["yes", "no"]])
+    deepEqual(
       parse("if (1 +2) yes else no"),
       ["if (1 + 2) { yes } else { no }", ["yes", "no"]])
+    deepEqual(
+      parse("if (1 + 2) if (a) 1 else no"),
+      ["if (1 + 2) { if (a) { 1 } else { no } }", ["a", "no"]])
+    deepEqual(
+      parse("if (1 + 2) { if (a) 1 } else no"),
+      ["if (1 + 2) { if (a) { 1 } } else { no }", ["a", "no"]])
 
   test "callExpression", ->
     deepEqual(parse("a()"), ["a()", ["a"]])
     deepEqual(parse("a(1)"), ["a(1)", ["a"]])
     deepEqual(parse("a(1, b)"), ["a(1, b)", ["a", "b"]])
+    deepEqual(parse("a(b(c))"), ["a(b(c))", ["a", "b", "c"]])
     deepEqual(parse("a.v(1, b)"), ["a.v(1, b)", ["a.v", "b"]])
     deepEqual(parse("a.v(1 + c, b)"), ["a.v(1 + c, b)", ["a.v", "c", "b"]])
 

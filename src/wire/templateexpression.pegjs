@@ -67,8 +67,14 @@ integer "integer"
   = digits:[0-9]+ { return digits.join(""); }
 
 ifexpr
-  = "if" ws* "(" cond:expr ")" ws* yes:expr no:(ws+ "else" ws+ expr)? {
-  return "if (" + cond + ") { " + yes + " }" + (no ? " else { " + no[3] + " }": ""); }
+  = "if" ws* "(" cond:expr ")" ws* "{" ws* yes:expr ws* "}" ws* no:elseexpr {
+  return "if (" + cond + ") { " + yes + " }" + (no ? " else { " + no + " }": ""); }
+  / "if" ws* "(" cond:expr ")" ws* yes:expr no:(ws+ no:elseexpr)? {
+  return "if (" + cond + ") { " + yes + " }" + (no ? " else { " + no[1] + " }": ""); }
+
+elseexpr
+  = "else" ws+ expr:expr { return expr; }
+  / "else" ws* "{" ws* expr:expr ws* "}" { return expr; }
 
 callexpr
   = func:path "(" args:exprlist? ")" {
