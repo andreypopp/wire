@@ -1,0 +1,25 @@
+define (require) ->
+  {View} = require 'wire/view'
+
+  class TodoList extends View
+    -> super ...
+
+    template: '''
+    <li foreach="item in ${todos}">
+      <block if="${item.done}">x</block>
+      ${item.title}
+    </li>
+    '''
+
+  todos = [
+    {title: 'Do something', done: false}
+    {title: 'Do another thing', done: true}
+    {title: 'Do third thing', done: false}
+  ]
+
+  app = new TodoList {
+    el: $('.todo-list')
+    todos: todos
+  }
+  app.render()
+  window.app = app
