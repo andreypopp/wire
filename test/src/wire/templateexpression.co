@@ -11,7 +11,7 @@ define (require) ->
     deepEqual(parse('""'), ['""', []])
     deepEqual(parse('"abc d"'), ['"abc d"', []])
     deepEqual(parse('[1,  a,"c", d]'), ['[1, a, "c", d]', ["a", "d"]])
-    deepEqual(parse('{a: 1,  b: "c"}'), ['{a: 1, b: "c"}', []])
+    deepEqual(parse('{a: 1,  b: "c", d: d}'), ['{a: 1, b: "c", d: d}', ["d"]])
 
   test "ifExpression", ->
     deepEqual(
