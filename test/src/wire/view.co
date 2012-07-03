@@ -3,7 +3,7 @@
 define (require) ->
 
   Event = require 'wire/Event'
-  {BaseView} = require 'wire/View'
+  {BaseView} = require 'wire/view'
   {extend} = require 'wire/base'
 
   module 'wire/View'
