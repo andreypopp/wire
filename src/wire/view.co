@@ -4,6 +4,7 @@ define (require) ->
 
   {Events} = require 'wire/event'
   {Base, extend, path, genId} = require 'wire/base'
+  {template} = require 'wire/template'
 
   eventSplitterRe = /\s+/
 
@@ -89,4 +90,16 @@ define (require) ->
       this.unbindEvents()
       this.el.remove()
 
-  {BaseView}
+  class View extends BaseView
+    -> super ...
+
+    render: (events) ->
+      this.el.html(this.template)
+      template this.el.get(0), this, {
+        exprs:
+          bind: (node, data, expr, templater) ->
+            console.log(node, data, expr)
+      }
+      this.el
+
+  {BaseView, View}

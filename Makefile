@@ -4,17 +4,22 @@ LIB = $(SRC:src/%.co=lib/%.js)
 TESTSRC = $(shell find test/src -type f -name '*.co')
 TESTLIB = $(TESTSRC:test/src/%.co=test/lib/tests/%.js)
 
+EXAMPLESSRC = $(shell find examples/src -type f -name '*.co')
+EXAMPLESLIB = $(EXAMPLESSRC:examples/src/%.co=examples/lib/%.js)
+
 PEGSRC = $(shell find src -type f -name '*.pegjs')
 PEGLIB = $(PEGSRC:src/%.pegjs=lib/%.js)
 
 COCO = coco -bcp
 PEGJS = pegjs
 
-all: lib test pegjs
+all: lib test pegjs examples
 
 lib: $(LIB)
 
-test: $(TESTLIB)
+examples: lib $(EXAMPLESLIB)
+
+test: lib $(TESTLIB)
 
 pegjs: $(PEGLIB)
 
@@ -34,6 +39,10 @@ test/lib/tests/%.js: test/src/%.co
 	@mkdir -p $(@D)
 	$(COCO) $< > $@
 
+examples/lib/%.js: examples/src/%.co
+	@mkdir -p $(@D)
+	$(COCO) $< > $@
+
 clean:
 	rm -rf lib/
-	rm -rf $(TESTLIB)
+	rm -rf $(TESTLIB) $(EXAMPLESLIB)
