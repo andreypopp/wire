@@ -74,7 +74,6 @@ define (require) ->
       else
         this.stack = []
       this.nodes = []
-      this.exprs = options.exprs || {}
 
     #
     # Recursive function to walk the tree processing the attributes as it goes.
