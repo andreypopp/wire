@@ -5,45 +5,95 @@ define (require) ->
   module "wire/templateexpression"
 
   test "literals", ->
-    deepEqual(parse("1"), ["1", []])
-    deepEqual(parse("a"), ["a", ["a"]])
-    deepEqual(parse("a.b.c"), ["a.b.c", ["a.b.c"]])
-    deepEqual(parse('""'), ['""', []])
-    deepEqual(parse('"abc d"'), ['"abc d"', []])
-    deepEqual(parse('[1,  a,"c", d]'), ['[1, a, "c", d]', ["a", "d"]])
-    deepEqual(parse('{a: 1,  b: "c", d: d}'), ['{a: 1, b: "c", d: d}', ["d"]])
+    deepEqual(
+      parse("1"),
+      {type: "expression", expr: "1", refs: []})
+    deepEqual(
+      parse("a"),
+      {type: "expression", expr: "a", refs: ["a"]})
+    deepEqual(
+      parse("a.b.c"),
+      {type: "expression", expr: "a.b.c", refs: ["a.b.c"]})
+    deepEqual(
+      parse('""'),
+      {type: "expression", expr: '""', refs: []})
+    deepEqual(
+      parse('"abc d"'),
+      {type: "expression", expr: '"abc d"', refs: []})
+    deepEqual(
+      parse('[1,  a,"c", d]'),
+      {type: "expression", expr: '[1, a, "c", d]', refs: ["a", "d"]})
+    deepEqual(
+      parse('{a: 1,  b: "c", d: d}'),
+      {type: "expression", expr: '{a: 1, b: "c", d: d}', refs: ["d"]})
 
   test "ifExpression", ->
     deepEqual(
       parse("if (1) yes else no"),
-      ["if (1) { yes } else { no }", ["yes", "no"]])
+      {type: "expression", expr: "if (1) { yes } else { no }", refs: ["yes", "no"]})
     deepEqual(
       parse("if (1) yes else {no}"),
-      ["if (1) { yes } else { no }", ["yes", "no"]])
+      {type: "expression", expr: "if (1) { yes } else { no }", refs: ["yes", "no"]})
     deepEqual(
       parse("if (1) {yes} else {no}"),
-      ["if (1) { yes } else { no }", ["yes", "no"]])
+      {type: "expression", expr: "if (1) { yes } else { no }", refs: ["yes", "no"]})
     deepEqual(
       parse("if (1 +2) yes else no"),
-      ["if (1 + 2) { yes } else { no }", ["yes", "no"]])
+      {type: "expression", expr: "if (1 + 2) { yes } else { no }", refs: ["yes", "no"]})
     deepEqual(
       parse("if (1 + 2) if (a) 1 else no"),
-      ["if (1 + 2) { if (a) { 1 } else { no } }", ["a", "no"]])
+      {type: "expression", expr: "if (1 + 2) { if (a) { 1 } else { no } }", refs: ["a", "no"]})
     deepEqual(
       parse("if (1 + 2) { if (a) 1 } else no"),
-      ["if (1 + 2) { if (a) { 1 } } else { no }", ["a", "no"]])
+      {type: "expression", expr: "if (1 + 2) { if (a) { 1 } } else { no }", refs: ["a", "no"]})
 
   test "callExpression", ->
-    deepEqual(parse("a()"), ["a()", ["a"]])
-    deepEqual(parse("a(1)"), ["a(1)", ["a"]])
-    deepEqual(parse("a(1, b)"), ["a(1, b)", ["a", "b"]])
-    deepEqual(parse("a(b(c))"), ["a(b(c))", ["a", "b", "c"]])
-    deepEqual(parse("a.v(1, b)"), ["a.v(1, b)", ["a.v", "b"]])
-    deepEqual(parse("a.v(1 + c, b)"), ["a.v(1 + c, b)", ["a.v", "c", "b"]])
+    deepEqual(
+      parse("a()"),
+      {type: "expression", expr: "a()", refs: ["a"]})
+    deepEqual(
+      parse("A()"),
+      {type: "expression", expr: "A()", refs: ["A"]})
+    deepEqual(
+      parse("a(1)"),
+      {type: "expression", expr: "a(1)", refs: ["a"]})
+    deepEqual(
+      parse("a(1, b)"),
+      {type: "expression", expr: "a(1, b)", refs: ["a", "b"]})
+    deepEqual(
+      parse("a(b(c))"),
+      {type: "expression", expr: "a(b(c))", refs: ["a", "b", "c"]})
+    deepEqual(
+      parse("a.v(1, b)"),
+      {type: "expression", expr: "a.v(1, b)", refs: ["a.v", "b"]})
+    deepEqual(
+      parse("a.v(1 + c, b)"),
+      {type: "expression", expr: "a.v(1 + c, b)", refs: ["a.v", "c", "b"]})
 
   test "binExpression", ->
-    deepEqual(parse("1 + 2"), ["1 + 2", []])
-    deepEqual(parse("1+ 2"), ["1 + 2", []])
-    deepEqual(parse("1 +2"), ["1 + 2", []])
-    deepEqual(parse("1+2"), ["1 + 2", []])
-    deepEqual(parse("1 + 2 + 3"), ["1 + 2 + 3", []])
+    deepEqual(
+      parse("1 + 2"),
+      {type: "expression", expr: "1 + 2", refs: []})
+    deepEqual(
+      parse("1+ 2"),
+      {type: "expression", expr: "1 + 2", refs: []})
+    deepEqual(
+      parse("1 +2"),
+      {type: "expression", expr: "1 + 2", refs: []})
+    deepEqual(
+      parse("1+2"),
+      {type: "expression", expr: "1 + 2", refs: []})
+    deepEqual(
+      parse("1 + 2 + 3"),
+      {type: "expression", expr: "1 + 2 + 3", refs: []})
+
+  test "iterExpression", ->
+    deepEqual(
+      parse("x in 2"),
+      {type: "iteration", expr: "2", refs: [], loopvar: "x"})
+    deepEqual(
+      parse("x in [1, 2, a]"),
+      {type: "iteration", expr: "[1, 2, a]", refs: ["a"], loopvar: "x"})
+    deepEqual(
+      parse("x in iterateOver(x)"),
+      {type: "iteration", expr: "iterateOver(x)", refs: ["iterateOver", "x"], loopvar: "x"})

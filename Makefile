@@ -11,7 +11,7 @@ PEGSRC = $(shell find src -type f -name '*.pegjs')
 PEGLIB = $(PEGSRC:src/%.pegjs=lib/%.js)
 
 COCO = coco -bcp
-PEGJS = pegjs
+PEGJS = pegjs --cache
 
 all: lib test pegjs examples
 
