@@ -221,9 +221,9 @@ define (require) ->
         originalValue = node.getAttribute('foreach')
         value = originalValue
 
-        paramName = 'param'
+        paramName = 'item'
         if value.charAt(0) === '$'
-          # No custom loop variable name. Use the default: 'param'
+          # No custom loop variable name. Use the default: 'item'
           value = this._stripBraces(value)
         else
           # Extract the loop variable name from 'NAME in ${ARRAY}'
