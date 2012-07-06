@@ -47,7 +47,7 @@ define (require) ->
       options: {allowEval: true}
       data: {name: 'fred'}
       res: 'hello fred<span>!</span>')
- 
+
   test 'ifFalse', ->
     runTest(
       tpl: '<p if="${name != \'jim\'}">hello ${name}</p>'
@@ -68,7 +68,7 @@ define (require) ->
       options: {allowEval: true}
       data: {name: 'jim'}
       res: '')
- 
+
   test 'simpleLoop', ->
     runTest(
       tpl: '<p foreach="index in [ 1, 2, 3 ]">${index}</p>',
@@ -89,14 +89,14 @@ define (require) ->
       options: { allowEval: true },
       data: {},
       res: '<p>1</p><p>2</p><p>3</p>')
- 
+
   test 'loopBlock', ->
     runTest(
       tpl: '<block foreach="i in array">${i}</block>',
       options: {},
       data: { array: [ 1, 2, 3 ] },
       res: '123')
- 
+
 # // Bug 692028: DOMTemplate memory leak with asynchronous arrays
 # // Bug 692031: DOMTemplate async loops do not drop the block element
 # function(promises) { return {
@@ -183,7 +183,7 @@ define (require) ->
         foo: -> undefined
       }
       res: '<p>undefined</p>')
- 
+
   # Bug 702642: DOMTemplate is relatively slow when evaluating JS ${}
   test 'propertySimple', ->
     runTest(
@@ -212,7 +212,7 @@ define (require) ->
       tpl: '<p>${nullvar}|${undefinedvar1}|${undefinedvar2}</p>'
       data: {nullvar: null, undefinedvar1: undefined}
       res: '<p>null|undefined|undefined</p>')
- 
+
   test 'propertyUndefAttrBlank', ->
     runTest(
       name: ''
@@ -227,7 +227,7 @@ define (require) ->
       tpl: '<div><p value="${nullvar}"></p><p value="${undefinedvar1}"></p><p value="${undefinedvar2}"></p></div>'
       data: {nullvar: null, undefinedvar1: undefined}
       res: '<div><p value="null"></p><p value="undefined"></p><p value="undefined"></p></div>')
- 
+
   test 'propertyUndefAttrBlank', ->
     runTest(
       name: ''
@@ -235,7 +235,7 @@ define (require) ->
       data: {nullvar: null, undefinedvar1: undefined}
       options: {blankNullUndefined: true}
       res: '<div><p value=""></p><p value=""></p><p value=""></p></div>')
- 
+
   # Bug 762673 - DOMTemplate should support DOM-level 0 events
   test 'dom0event1', ->
     runTest(
@@ -243,7 +243,7 @@ define (require) ->
       tpl: '<div onclick="alert(\'${name}\');"></div>'
       data: {name: 'fred'}
       res: '<div onclick="alert(\'fred\');"></div>')
- 
+
   test 'dom0event2', ->
     runTest(
       tpl: '<div onclick="${name}"></div>'
