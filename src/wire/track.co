@@ -2,6 +2,83 @@
 
 define ->
 
+  ArrayTracker = {
+    push: () ->
+      items = toArray(arguments)
+      result = Array.prototype.push.apply(this, items)
+      this.trigger 'add', {
+        this.length - items.length,
+        this.length - 1,
+        items
+      }
+      result
+
+    pop: () ->
+      result = Array.prototype.pop.call(this)
+      this.trigget 'remove', {
+        this.length,
+        this.length,
+        [result]
+      }
+      result
+
+    shift: () ->
+      result = Array.prototype.shift.call(this)
+      this.trigger 'remove', {
+        0,
+        0,
+        [result]
+      }
+      result
+
+    unshift: () ->
+      items = toArray(arguments)
+      result = Array.prototype.unshift.apply(this, items)
+      this.trigger 'add', {
+        0,
+        items.length,
+        items
+      }
+      result
+
+    splice: (index, howmany, element1) ->
+      args = toArray(arguments)
+      items = args.slice(2)
+      result = Array.prototype.splice.apply(this, args)
+
+      if result.length
+        this.trigger 'remove', {
+          index,
+          result.length - 1,
+          result
+        }
+      if items.length
+        this.dispatchEvent 'add', {
+          index,
+          items.length - 1,
+          items
+        }
+      result
+
+    sort: () ->
+      args = toArray(arguments)
+      result = Array.prototype.sort.apply(this, args)
+      this. 'reset', {
+        0,
+        this.length - 1,
+        this
+      }
+      result
+
+    reverse: () ->
+      result = Array.prototype.reverse.call(this)
+      this.trigger 'reset', {
+        0,
+        this.length - 1,
+        this
+      }
+      result
+
   track = (o, attrs) ->
     attrs = attrs.split(/\s+/)
     for attr of attrs
