@@ -2,6 +2,24 @@
 
 define ->
 
+  nativeIsArray = Array::isArray
+  toString = Object::toString
+  slice = Array::slice
+
+  isArray = nativeIsArray || (o) ->
+    toString.call(o) == '[object Array]'
+
+  isArguments = (o) ->
+    toString.call(o) == '[object Arguments]'
+
+  toArray = (o) ->
+    if (!o)
+      []
+    else if isArray(o)
+      slice.call(o)
+    if isArguments(o)
+      slice.call(o)
+
   extend = (o) ->
     for x of Array::slice.call(arguments, 1)
       for key in x
@@ -35,4 +53,4 @@ define ->
         return o
     return o
 
-  {genId, extend, Base, path}
+  {genId, extend, Base, path, toArray}

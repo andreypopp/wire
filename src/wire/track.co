@@ -2,42 +2,45 @@
 
 define ->
 
+  {toArray} = require 'wire/base'
+  {Events} = require 'wire/event'
+
   ArrayTracker = {
-    push: () ->
+    push: ->
       items = toArray(arguments)
       result = Array.prototype.push.apply(this, items)
-      this.trigger 'add', {
-        this.length - items.length,
-        this.length - 1,
-        items
+      this.trigger 'arraychange:add', {
+        startIndex: this.length - items.length
+        endIndex: this.length - 1
+        newValue: items
       }
       result
 
-    pop: () ->
+    pop: ->
       result = Array.prototype.pop.call(this)
-      this.trigget 'remove', {
-        this.length,
-        this.length,
-        [result]
+      this.trigget 'arraychange:remove', {
+        startIndex: this.length
+        endIndex: this.length
+        newValue: [result]
       }
       result
 
-    shift: () ->
+    shift: ->
       result = Array.prototype.shift.call(this)
-      this.trigger 'remove', {
-        0,
-        0,
-        [result]
+      this.trigger 'arraychange:remove', {
+        startIndex: 0
+        endIndex: 0
+        newValue: [result]
       }
       result
 
-    unshift: () ->
+    unshift: ->
       items = toArray(arguments)
       result = Array.prototype.unshift.apply(this, items)
-      this.trigger 'add', {
-        0,
-        items.length,
-        items
+      this.trigger 'arraychange:add', {
+        startIndex: 0
+        endIndex: items.length
+        newValue: items
       }
       result
 
@@ -47,39 +50,45 @@ define ->
       result = Array.prototype.splice.apply(this, args)
 
       if result.length
-        this.trigger 'remove', {
-          index,
-          result.length - 1,
-          result
+        this.trigger 'arraychange:remove', {
+          startIndex: index
+          endIndex: result.length - 1
+          newValue: result
         }
       if items.length
-        this.dispatchEvent 'add', {
-          index,
-          items.length - 1,
-          items
+        this.dispatchEvent 'arraychange:add', {
+          startIndex: index
+          endIndex: items.length - 1
+          newValue: items
         }
       result
 
-    sort: () ->
+    sort: ->
       args = toArray(arguments)
       result = Array.prototype.sort.apply(this, args)
-      this. 'reset', {
-        0,
-        this.length - 1,
-        this
+      this.trigger 'arraychange:reset', {
+        startIndex: 0
+        endIndex: this.length - 1
+        newValue: this
       }
       result
 
-    reverse: () ->
+    reverse: ->
       result = Array.prototype.reverse.call(this)
-      this.trigger 'reset', {
-        0,
-        this.length - 1,
-        this
+      this.trigger 'arraychange:reset', {
+        startIndex: 0
+        endIndex: this.length - 1
+        newValue: this
       }
       result
+  }
 
-  track = (o, attrs) ->
+  trackArray = (arr) ->
+    arr <<< Events
+    arr <<< ArrayTracker
+    arr
+
+  trackAttribute = (o, attrs) ->
     attrs = attrs.split(/\s+/)
     for attr of attrs
       let
@@ -115,4 +124,4 @@ define ->
           Object.getOwnPropertyDescriptor(o, attr).set?.isTracker = true
     return
 
-  {track}
+  {track: trackAttribute, trackAttribute, trackArray}

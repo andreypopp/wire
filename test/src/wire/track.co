@@ -3,8 +3,8 @@
 define (require) ->
 
   {extend} = require 'wire/base'
-  {track} = require 'wire/track'
   {Events} = require 'wire/event'
+  {track, trackArray} = require 'wire/track'
 
   module 'wire/track'
 
@@ -88,3 +88,23 @@ define (require) ->
     deepEqual(results, [1, 2, 1])
     o.counter = 2
     deepEqual(results, [1, 2, 1, 2])
+
+  test 'array push tracking', ->
+    results = []
+    o = []
+    trackArray(o)
+    o.on 'arraychange:add', (ev) ->
+      results.push(ev)
+    o.push(1)
+    deepEqual(o, [1])
+    deepEqual(results, [{startIndex:0, endIndex: 0, newValue: [1]}])
+
+  test 'array unshift tracking', ->
+    results = []
+    o = [2]
+    trackArray(o)
+    o.on 'arraychange:add', (ev) ->
+      results.push(ev)
+    o.unshift(1)
+    deepEqual(o, [1, 2])
+    deepEqual(results, [{startIndex:0, endIndex: 1, newValue: [1]}])
