@@ -18,7 +18,7 @@ define ->
 
     pop: ->
       result = Array.prototype.pop.call(this)
-      this.trigget 'arraychange:remove', {
+      this.trigger 'arraychange:remove', {
         startIndex: this.length
         endIndex: this.length
         newValue: [result]
