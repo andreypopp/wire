@@ -1,0 +1,99 @@
+
+define (require) ->
+
+  {Base} = require 'wire/base'
+  {Events} = require 'wire/event'
+
+  class Domain extends Base
+    @mixin Events
+
+    ->
+      this.models = {}
+
+    commit: ->
+      for id in this.models
+        {bindings, state, model} = this.models[id]
+        for attr in state
+          if model[attr] !== state[attr]
+            diff = {prev: state[attr], curr: model[attr]}
+            for cb of bindings[attr]
+              cb(diff)
+            state[attr] = model[attr]
+
+    rollback: ->
+      for id in this.models
+        {state, model} = this.models[id]
+        model <<< state
+
+    destroy: (id) ->
+      delete this.models[id]
+
+    track: (model, cb, id, ...attrs) ->
+      if not (id in this.models)
+        this.models[id] = {bindings: {}, state: {}, model: model}
+
+      {bindings, state} = this.models[id]
+
+      for attr of attrs
+        if attr in bindings
+          bindings[attr].push(cb)
+        else
+          state[attr] = model[attr]
+          bindings[attr] = [cb]
+
+
+  window.g = globalDomain = new Domain()
+
+  commit = ->
+    globalDomain.commit(...arguments)
+  rollback = ->
+    globalDomain.rollback(...arguments)
+  destroy = ->
+    globalDomain.destroy(...arguments)
+  track = ->
+    globalDomain.track(...arguments)
+
+  class DummyPersistenceStrategy
+
+  class Repository extends Base
+    @mixin Events
+
+    persistence: new DummyPersistenceStrategy
+    domain: globalDomain
+
+    (options) ->
+      this <<< options
+      this.models = {}
+
+    add: (model) ->
+      pass
+
+    delete: (id) ->
+      pass
+
+ ## EXAMPLE
+ #
+ #class Contact
+ #  (id, name, address) ->
+ #    this.id = id
+ #    this.name = name
+ #    this.address = address
+ #
+ #class ContactRepository extends Repository
+ #  model: Contact
+ #  attrs:
+ #    \id
+ #    \name
+ #    \address
+ #
+ #contacts = new ContactRepository
+ #c = contacts.find(1)
+ #c.name = 'Andrey Popp'
+ #commit()
+ #
+ ## /EXAMPLE
+
+  {
+    Domain, Repository,
+    globalDomain, rollback, commit, destroy, track
+  }

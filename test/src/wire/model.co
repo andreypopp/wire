@@ -1,0 +1,71 @@
+'use strict'
+
+define (require) ->
+
+  {track, destroy, commit, rollback} = require 'wire/model'
+
+  module 'wire/model/Domain'
+
+  id = 0
+
+  createFUD1 = ->
+    o = {a: 1, b: 2}
+    events = []
+    log = (e) ->
+      events.push(e)
+    track(o, log, ++id; \a)
+    {o, events, id}
+
+  test 'track change event', ->
+    {o, events} = createFUD1()
+    o.a = 3
+    equal(o.a, 3)
+    commit()
+    deepEqual(events, [{curr: 3, prev: 1}])
+
+  test 'commit is noop if nothing changed', ->
+    {o, events} = createFUD1()
+    commit()
+    deepEqual(events, [])
+
+  test 'commit is noop if nothing changed after some changes', ->
+    {o, events} = createFUD1()
+    o.a = 3
+    equal(o.a, 3)
+    commit()
+    deepEqual(events, [{curr: 3, prev: 1}])
+    commit()
+    deepEqual(events, [{curr: 3, prev: 1}])
+
+  test 'rollback works', ->
+    {o, events} = createFUD1()
+    o.a = 3
+    equal(o.a, 3)
+    rollback()
+    equal(o.a, 1)
+
+  test 'commit is noop afer rollback', ->
+    {o, events} = createFUD1()
+    o.a = 3
+    rollback()
+    commit()
+    deepEqual(events, [])
+
+  test 'track more events', ->
+    {o, events, id} = createFUD1()
+    log = (e) ->
+      events.push(e)
+    track(o, log, id, \b)
+    o.a = 3
+    deepEqual(events, [])
+    o.b = 4
+    deepEqual(events, [])
+    commit()
+    deepEqual(events, [{curr: 3, prev: 1}, {curr: 4, prev: 2}])
+
+  test 'destroy works', ->
+    {o, events, id} = createFUD1()
+    o.a = 3
+    destroy(id)
+    commit()
+    deepEqual(events, [])
