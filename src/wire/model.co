@@ -76,6 +76,9 @@ define (require) ->
         model.__cid__ = genId('model')
         this.models[__cid__] = model
 
+    find: (id) ->
+      this.models[id]
+
   eventSplitterRe = /\s+/
 
   class Model extends Base
@@ -92,28 +95,6 @@ define (require) ->
             (o) ~> this.trigger(ev, o)
           this.__domain__.track(this, cb, this.__cid__, attr)
       Events.on ...
-
- ## EXAMPLE
- #
- #class Contact
- #  (id, name, address) ->
- #    this.id = id
- #    this.name = name
- #    this.address = address
- #
- #class ContactRepository extends Repository
- #  model: Contact
- #  attrs:
- #    \id
- #    \name
- #    \address
- #
- #contacts = new ContactRepository
- #c = contacts.find(1)
- #c.name = 'Andrey Popp'
- #commit()
- #
- ## /EXAMPLE
 
   {
     Domain, Repository, Model,
