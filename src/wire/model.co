@@ -1,7 +1,7 @@
 
 define (require) ->
 
-  {Base} = require 'wire/base'
+  {Base, genId} = require 'wire/base'
   {Events} = require 'wire/event'
 
   class Domain extends Base
@@ -65,11 +65,33 @@ define (require) ->
       this <<< options
       this.models = {}
 
-    add: (model) ->
-      pass
+    create: (data) ->
+      model = new this.model(data)
+      this.add(model)
+      model
 
-    delete: (id) ->
-      pass
+    add: (model) ->
+      # check if object comes from another repo
+      if not model.__cid__
+        model.__cid__ = genId('model')
+        this.models[__cid__] = model
+
+  eventSplitterRe = /\s+/
+
+  class Model extends Base
+    @mixin Events
+
+    (data) ->
+      this <<< data
+
+    on: (events, callback, context) ->
+      attrs = for ev of events.split(eventSplitterRe)
+        if ev.slice(0, 7) === 'change:'
+          attr = ev.slice(7)
+          cb = let
+            (o) ~> this.trigger(ev, o)
+          this.__domain__.track(this, cb, this.__cid__, attr)
+      Events.on ...
 
  ## EXAMPLE
  #
@@ -94,6 +116,6 @@ define (require) ->
  ## /EXAMPLE
 
   {
-    Domain, Repository,
+    Domain, Repository, Model,
     globalDomain, rollback, commit, destroy, track
   }

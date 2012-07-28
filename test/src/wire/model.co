@@ -69,3 +69,24 @@ define (require) ->
     destroy(id)
     commit()
     deepEqual(events, [])
+
+  module 'wire/model/Model'
+
+  {Repository, Model} = require 'wire/model'
+
+  class Contact extends Model
+
+  class Contacts extends Repository
+    model: Contact
+    attrs:
+      \name
+      \phone
+
+  contacts = new Contacts
+
+  test 'create model', ->
+    c = contacts.create {
+      name: 'Andrey Popp'
+      phone: 555
+    }
+    c
